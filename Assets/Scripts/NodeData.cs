@@ -27,26 +27,4 @@ public class NodeOptions
         return $"Id {Id} \n {Description} \nSprite {Icon} \nColor {Color} \n Color \n {requirements} \n {ProduceSpeed} \n {Product}";
     }
 }
-[System.Serializable]
-public struct Options
-{
-    public string Id;
-    public string Description;
-    public Sprite Icon;
-    public Color Color;
-    public List<string> Requirements;
-    public float ProduceSpeed;
-    public string Product;
-
-    public Options(NodeOptions op)
-    {
-        Id = op.Id;
-        Description = op.Description;
-        Icon = op.Icon;
-        Color = op.Color;
-        Requirements = op.Requirements;
-        ProduceSpeed = op.ProduceSpeed;
-        Product = op.Product;
-    }
-}
 

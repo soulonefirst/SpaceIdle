@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-public class NodeController : MonoBehaviour , IPointerDownHandler, IPointerUpHandler
+public class NodeController : MonoBehaviour
 {
-    [SerializeField]
-    private string nodeId;
+    [SerializeField] private string nodeId;
 
-    public Options options;
+    public NodeOptions options;
 
-    [SerializeField]
-    private bool inProgress;
+    [SerializeField] private bool taskComplete;
 
     private Transform progressBar;
     private TextMesh textMesh;
@@ -28,39 +26,8 @@ public class NodeController : MonoBehaviour , IPointerDownHandler, IPointerUpHan
     }
     private void UpdateOptions(NodesData nodesData)
     {
-        options = new Options(nodesData.NodeOptionsList.Find(x => x.Id == nodeId));
+        options = nodesData.NodeOptionsList.Find(x => x.Id == nodeId);
         SetGameObject();
-    }
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        
-        foreach(GameObject gO in eventData.hovered)
-        {
-            if(gO.name == "Output")
-            {
-                connections.StartDrawLine().lineIsDraw = true;
-                break;
-            }else if(gO.name == nodeId)
-            {
-
-            }
-        }
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        foreach (GameObject gO in eventData.hovered)
-        {
-            if (gO.name == "Input" && connections.lineIsDraw==true)
-            {
-                connections.AddConnection(eventData.pointerPress).lineIsDraw = false;
-                break;
-            }
-        }
-        if (connections.lineIsDraw == true)
-        {
-            connections.StopDrawLine().lineIsDraw = false;
-        }
     }
     private void SetGameObject()
     {
@@ -72,11 +39,12 @@ public class NodeController : MonoBehaviour , IPointerDownHandler, IPointerUpHan
    
     public void TaskStart()
     {
+        taskComplete = false;
         StartCoroutine(TaskProcess());
     }
     public void TaskComplete()
     {
-
+        taskComplete = true;
     }
     private bool CheckRequariments()
     {
@@ -94,8 +62,6 @@ public class NodeController : MonoBehaviour , IPointerDownHandler, IPointerUpHan
             progressBar.localScale = new Vector3(0, 1, 1);
             TaskComplete();
         }
-        if (CheckRequariments())
-        StartCoroutine(TaskProcess());
     }
 
 }

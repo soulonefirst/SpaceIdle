@@ -5,29 +5,26 @@ using UnityEngine;
 public class LineController : MonoBehaviour
 {
     private LineRenderer lR;
-    public List<Transform> points;
-    private Transform pointer;
-
+    public InputsController inputsCont;
+    public List<Transform> bindPoints;
 
     private void Start()
     {
         lR = GetComponent<LineRenderer>();
-        pointer = new GameObject("Pointer").transform;
-        points.Add(pointer);
     }
 
 
     private void FixedUpdate()
     {
-        pointer.position = GetWorldCoordinate(Input.mousePosition);
-        for(int i = 0; i < points.Count; i++)
+        if (bindPoints.Count==0)
         {
-            lR.SetPosition(i, points[i].position);
+            Vector3[] points = {transform.position,inputsCont.MousePosition()};
+            lR.SetPositions(points);
         }
-    }
-    private Vector3 GetWorldCoordinate(Vector3 mousePosition)
-    {
-        Vector3 mousePoint = new Vector3(mousePosition.x, mousePosition.y, 10);
-        return Camera.main.ScreenToWorldPoint(mousePoint);
+        else
+        {
+            Vector3[] bPoints = {bindPoints[0].position, bindPoints[1].position };
+            lR.SetPositions(bPoints);
+        }
     }
 }

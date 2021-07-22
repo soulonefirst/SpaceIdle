@@ -1,31 +1,65 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ConnectionsController : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject linePrefab;
-    [SerializeField]
-    private List<Transform> outputConnections;
-    [SerializeField]
-    private List<Transform> inputConnections;
-    public bool lineIsDraw = false;
-
-
-    public ConnectionsController StartDrawLine()
+    [SerializeField] private List<ConnectionsController> connections = new List<ConnectionsController>();
+    private List<LineController> connectedLines = new List<LineController>();
+    [SerializeField] private GameObject line;
+    private LineController currentLineDraw;
+    private NodeController node;
+    private void Start()
     {
-        GameObject line = Instantiate(linePrefab, transform.position, Quaternion.identity, transform);      
-        line.GetComponent<LineController>().points.Add(transform);
-        return this;
+        node = GetComponent<NodeController>();
     }
-    public ConnectionsController AddConnection(GameObject target)
+    public bool AddOutputConnection(ConnectionsController anotherNode)
     {
-        Debug.Log(target.name);
-        return this;
+        foreach(ConnectionsController cc in connections)
+        {
+            if (cc == anotherNode || this == anotherNode)
+            {
+                return false;
+            }
+        }
+        foreach(string req in anotherNode.node.options.Requirements)
+        {
+            if (node.options.Product == req)
+            {
+                connections.Add(anotherNode);
+                connectedLines.Add(currentLineDraw);
+                anotherNode.connections.Add(this);
+                anotherNode.connectedLines.Add(currentLineDraw);
+
+                currentLineDraw.bindPoints = new List<Transform>();
+                currentLineDraw.bindPoints.Add(node.transform);
+                currentLineDraw.bindPoints.Add(anotherNode.transform);
+                currentLineDraw.enabled = false;
+                return true;
+            }
+        }
+        return false;
     }
-    public ConnectionsController StopDrawLine()
+
+    public void StartDrawLine(InputsController inputsController)
     {
-        return this;
+        var gO = Instantiate(line, transform);
+        currentLineDraw = gO.GetComponent<LineController>();
+        currentLineDraw.inputsCont = inputsController;
+    }
+    public void CancelDrawLine()
+    {
+        Destroy(currentLineDraw.gameObject);
+    }
+    public void ActivateConnectdLines(bool b)
+    {
+        if(connectedLines.Count > 0)
+        {
+            foreach(LineController lineController in connectedLines)
+            {
+                lineController.enabled = b;
+            }
+        }
     }
 }
