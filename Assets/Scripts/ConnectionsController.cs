@@ -6,15 +6,18 @@ using UnityEngine;
 public class ConnectionsController : MonoBehaviour
 {
     [SerializeField] private List<ConnectionsController> connections = new List<ConnectionsController>();
-    private List<LineController> connectedLines = new List<LineController>();
     [SerializeField] private GameObject line;
-    private LineController currentLineDraw;
+    [SerializeField] private LineController currentLineDraw;
+
+    private List<LineController> connectedLines = new List<LineController>();
     private NodeController node;
+    [SerializeField] private Transform circle;
     private void Start()
     {
         node = GetComponent<NodeController>();
+        circle = transform.GetChild(1).transform;
     }
-    public bool AddOutputConnection(ConnectionsController anotherNode)
+    public bool AddConnection(ConnectionsController anotherNode)
     {
         foreach(ConnectionsController cc in connections)
         {
@@ -32,7 +35,6 @@ public class ConnectionsController : MonoBehaviour
                 anotherNode.connections.Add(this);
                 anotherNode.connectedLines.Add(currentLineDraw);
 
-                currentLineDraw.bindPoints = new List<Transform>();
                 currentLineDraw.bindPoints.Add(node.transform);
                 currentLineDraw.bindPoints.Add(anotherNode.transform);
                 currentLineDraw.enabled = false;

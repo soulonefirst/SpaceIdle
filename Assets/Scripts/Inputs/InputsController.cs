@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 public class InputsController : MonoBehaviour
@@ -24,14 +25,12 @@ public class InputsController : MonoBehaviour
         playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHit());
         playerInput.Main.RightClick.started += x => RightClickStart(GetRaycastHit());
         playerInput.Main.RightClick.canceled += x => RightClickEnd(GetRaycastHit());
-
     }
 
     private void OnDisable()
     {
         playerInput.Main.Disable();
     }
-
     private void LeftClickStart(RaycastHit2D hit)
     {
         if (connectLineDraw != null)
@@ -65,7 +64,7 @@ public class InputsController : MonoBehaviour
     {
         if(hit && connectLineDraw != null && hit.transform.TryGetComponent(typeof(ConnectionsController), out Component connect))
         {
-            if (connectLineDraw.AddOutputConnection(connect.GetComponent<ConnectionsController>()))
+            if (connectLineDraw.AddConnection(connect.GetComponent<ConnectionsController>()))
             {
                 connectLineDraw = null;
             }

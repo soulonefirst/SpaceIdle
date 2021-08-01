@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+
 
 public class SheetProcessor : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class SheetProcessor : MonoBehaviour
         {"red", Color.red},
         {"green", Color.green},
         {"blue", Color.blue},
-        {"brown", new Color(139,69,19) }
+        {"brown", new Color(139/255f,69/255f,19/255f) }
     };
     
     public NodesData ProcessNodeData(string cvsRawData)
@@ -37,7 +37,7 @@ public class SheetProcessor : MonoBehaviour
             {
                 Id = cells[0],
                 Description = cells[1],
-                Icon = null,
+                Icon = LoadAssetBundle.GetSprite(cells[2]),
                 Color = ParseColor(cells[3]),
                 Requirements = ParseRequirements(cells[4]),
                 ProduceSpeed = ParseFloat(cells[5]),
@@ -80,7 +80,6 @@ public class SheetProcessor : MonoBehaviour
         {
             result = _colors[color];
         }
-        
         return result;
     }
 
@@ -120,7 +119,8 @@ public class SheetProcessor : MonoBehaviour
 
         return result;
     }
-    
+
+
     private char GetPlatformSpecificLineEnd()
     {
         char lineEnding = '\n';

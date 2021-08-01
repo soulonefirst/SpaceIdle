@@ -11,7 +11,7 @@ public class NodeController : MonoBehaviour
     [SerializeField] private bool taskComplete;
 
     private Transform progressBar;
-    private TextMesh textMesh;
+    private SpriteRenderer spriteRenderer;
     private ConnectionsController connections;
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class NodeController : MonoBehaviour
     private void Start()
     {
         progressBar = transform.GetChild(0).Find("Bar").transform;
-        textMesh = GetComponent<TextMesh>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         connections = GetComponentInChildren<ConnectionsController>();
     }
     private void UpdateOptions(NodesData nodesData)
@@ -32,9 +32,7 @@ public class NodeController : MonoBehaviour
     private void SetGameObject()
     {
         gameObject.name = nodeId;
-        textMesh.text = nodeId;
-        //Icon
-        textMesh.color = options.Color;
+        spriteRenderer.sprite = options.Icon;
     }
    
     public void TaskStart()

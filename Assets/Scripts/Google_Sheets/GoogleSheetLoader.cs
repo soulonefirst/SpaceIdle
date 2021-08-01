@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 [RequireComponent(typeof(CVSLoader), typeof(SheetProcessor))]
@@ -28,15 +29,19 @@ public class GoogleSheetLoader : MonoBehaviour
         }
     }
 
-    private void OnRawCVSLoaded(string rawCVSText, string pageId)
+    private async void OnRawCVSLoaded(string rawCVSText, string pageId)
     {
+        while(!LoadAssetBundle.assetsLoaded)
+        {
+            await Task.Yield();
+        }
         switch (pageId)
         {
             case "Nodes":
                 _data = _sheetProcessor.ProcessNodeData(rawCVSText);
                 OnProcessData?.Invoke(_data);
                 break;
-            case "Nodes2":
+            case "Sprites":
                 _sheetProcessor.Test(rawCVSText);
                 break;
         }

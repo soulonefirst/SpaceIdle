@@ -6,7 +6,7 @@ public class LineController : MonoBehaviour
 {
     private LineRenderer lR;
     public InputsController inputsCont;
-    public List<Transform> bindPoints;
+    public List<Transform> bindPoints = new List<Transform>();
 
     private void Start()
     {
