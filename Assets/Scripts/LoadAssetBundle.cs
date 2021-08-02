@@ -55,7 +55,6 @@ public class LoadAssetBundle : MonoBehaviour
 
         AssetBundle asseBundle = assetBundleCreateRequest.assetBundle;
 
-        //Load the Asset (Use Texture2D since it's a Texture. Use GameObject if prefab)
         AssetBundleRequest assetsReq = asseBundle.LoadAllAssetsAsync<object>();
         yield return assetsReq;
         switch (assetBundleName)

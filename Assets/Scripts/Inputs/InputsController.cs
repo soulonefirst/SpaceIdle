@@ -1,17 +1,23 @@
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InputsController : MonoBehaviour
 {
     private PlayerInputs playerInput;
     private Camera cam;
-    [SerializeField] private ConnectionsController connectLineDraw;
-    [SerializeField] private Transform dragObject;
+    [SerializeField] private List<ConnectionsController> connectionTargets = new List<ConnectionsController>();
+    [SerializeField] private ConnectionsController dragObject;
+    private int draggableMask;
+    private int connectingMask;
 
+    public static event Action<bool> startDrag;
     private void Start()
     {
-      cam = Camera.main;
+        cam = Camera.main;
+        draggableMask = LayerMask.GetMask("Draggable");
+        connectingMask = LayerMask.GetMask("Connecting");
     }
     private void OnEnable()
     {
@@ -21,10 +27,9 @@ public class InputsController : MonoBehaviour
         }
         playerInput.Main.Enable();
 
-        playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit());
-        playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHit());
-        playerInput.Main.RightClick.started += x => RightClickStart(GetRaycastHit());
-        playerInput.Main.RightClick.canceled += x => RightClickEnd(GetRaycastHit());
+        playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit(draggableMask));
+        playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHit(connectingMask));
+        playerInput.Main.MousePosition.performed += x => MouseMove();
     }
 
     private void OnDisable()
@@ -33,47 +38,38 @@ public class InputsController : MonoBehaviour
     }
     private void LeftClickStart(RaycastHit2D hit)
     {
-        if (connectLineDraw != null)
+        if (hit && hit.transform.TryGetComponent(out ConnectionsController connect))
         {
-            connectLineDraw.CancelDrawLine();
-            connectLineDraw = null;
-        }
-        else if(hit && hit.transform.TryGetComponent(typeof(ConnectionsController), out Component connect))
-        {
-            dragObject = connect.transform;
-            dragObject.GetComponent<ConnectionsController>().ActivateConnectdLines(true);
+            dragObject = connect;
+            dragObject.ActivateConnectedLines(true);
+            startDrag?.Invoke(true);
         }
     }
     private void LeftClickEnd(RaycastHit2D hit)
     {
-        if(dragObject != null)
+        if (dragObject != null && connectionTargets.Count > 0)
         {
-            dragObject.GetComponent<ConnectionsController>().ActivateConnectdLines(false);
-            dragObject = null;
-        }
-    }
-    private void RightClickStart(RaycastHit2D hit)
-    {
-        if (connectLineDraw == null && hit && hit.transform.TryGetComponent(typeof(ConnectionsController), out Component connect))
-        {
-            connectLineDraw = connect.GetComponent<ConnectionsController>();
-            connectLineDraw.StartDrawLine(this);
-        }
-    }
-    private void RightClickEnd(RaycastHit2D hit)
-    {
-        if(hit && connectLineDraw != null && hit.transform.TryGetComponent(typeof(ConnectionsController), out Component connect))
-        {
-            if (connectLineDraw.AddConnection(connect.GetComponent<ConnectionsController>()))
+            foreach (ConnectionsController connection in connectionTargets)
             {
-                connectLineDraw = null;
+                dragObject.AddConnection(connection);
             }
         }
+        if (dragObject != null)
+        {
+            dragObject = null;
+            connectionTargets.Clear();
+            startDrag?.Invoke(false);
+        }
     }
-    private RaycastHit2D GetRaycastHit()
+    private RaycastHit2D GetRaycastHit(int layer)
     {
         Ray ray = cam.ScreenPointToRay(playerInput.Main.MousePosition.ReadValue<Vector2>());
-        return Physics2D.GetRayIntersection(ray);
+        return Physics2D.GetRayIntersection(ray, Mathf.Infinity, layer);
+    }
+    private RaycastHit2D[] GetRaycastHits(int layer)
+    {
+        Ray ray = cam.ScreenPointToRay(playerInput.Main.MousePosition.ReadValue<Vector2>());
+        return Physics2D.GetRayIntersectionAll(ray, Mathf.Infinity, layer);
     }
     public Vector2 MousePosition()
     {
@@ -81,11 +77,53 @@ public class InputsController : MonoBehaviour
         var mousePoint = new Vector3(mpp.x, mpp.y, 10);
         return cam.ScreenToWorldPoint(mousePoint);
     }
-    private void FixedUpdate()
+    private void MouseMove()
     {
-        if(dragObject != null)
+        if (dragObject != null)
         {
-            dragObject.position = MousePosition();
+            dragObject.transform.position = MousePosition();
+
+            var hits = GetRaycastHits(connectingMask);
+            var hitObjects = new List<ConnectionsController>();
+            foreach (RaycastHit2D hit in hits)
+            {
+                if (hit.transform.parent.TryGetComponent(out ConnectionsController hitConnect))
+                    hitObjects.Add(hit.transform.parent.GetComponent<ConnectionsController>());
+            }
+            if (hits.Length > 0 && connectionTargets.Count == 0)
+            {
+                AddConnections(hitObjects);
+            }
+            else if (connectionTargets.Count != hits.Length)
+            {
+                RemoveExcessConnections(hitObjects);
+                AddConnections(hitObjects);
+            }
+        }
+
+    }
+    private void AddConnections(List<ConnectionsController> hitObjects)
+    {
+        foreach (ConnectionsController hitConnect in hitObjects)
+        {
+            if (!connectionTargets.Contains(hitConnect))
+            {
+                dragObject.StartDrawLine(hitConnect);
+                connectionTargets.Add(hitConnect);
+            }
+
+        }
+    }
+    private void RemoveExcessConnections(List<ConnectionsController> hitObjects)
+    {
+        for (int i = 0; i < connectionTargets.Count; i++)
+        {
+            if (!hitObjects.Contains(connectionTargets[i]))
+            {
+                dragObject.CancelDrawLine(connectionTargets[i]);
+                connectionTargets.Remove(connectionTargets[i]);
+            }
         }
     }
 }
+

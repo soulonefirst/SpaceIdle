@@ -28,11 +28,14 @@ public class NodeController : MonoBehaviour
     {
         options = nodesData.NodeOptionsList.Find(x => x.Id == nodeId);
         SetGameObject();
+        connections.SetConnectionArea(options.Draggable);
     }
     private void SetGameObject()
     {
         gameObject.name = nodeId;
         spriteRenderer.sprite = options.Icon;
+        if (options.Draggable)
+            gameObject.layer = 6;
     }
    
     public void TaskStart()

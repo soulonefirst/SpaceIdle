@@ -16,6 +16,7 @@ public class NodeOptions
     public List<string> Requirements;
     public float ProduceSpeed;
     public string Product;
+    public bool Draggable;
 
     public override string ToString()
     {

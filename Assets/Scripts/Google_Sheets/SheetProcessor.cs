@@ -41,7 +41,8 @@ public class SheetProcessor : MonoBehaviour
                 Color = ParseColor(cells[3]),
                 Requirements = ParseRequirements(cells[4]),
                 ProduceSpeed = ParseFloat(cells[5]),
-                Product = cells[6]
+                Product = cells[6],
+                Draggable = ParseBool(cells[7])           
             }) ;
         }
         return data;
@@ -120,6 +121,10 @@ public class SheetProcessor : MonoBehaviour
         return result;
     }
 
+    private bool ParseBool(string s)
+    {
+        return s == "TRUE" ? true : false; 
+    }
 
     private char GetPlatformSpecificLineEnd()
     {

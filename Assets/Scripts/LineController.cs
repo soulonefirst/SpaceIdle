@@ -4,27 +4,28 @@ using UnityEngine;
 
 public class LineController : MonoBehaviour
 {
+    public ConnectionsController connectionsController;
     private LineRenderer lR;
-    public InputsController inputsCont;
-    public List<Transform> bindPoints = new List<Transform>();
+    private Transform[] bindPoints = new Transform[2];
 
     private void Start()
     {
         lR = GetComponent<LineRenderer>();
+        SetLinePoints();
     }
-
+    public void BindPoints(Transform target)
+    {
+        bindPoints[0]  = transform;
+        bindPoints[1] = target;
+    }
 
     private void FixedUpdate()
     {
-        if (bindPoints.Count==0)
-        {
-            Vector3[] points = {transform.position,inputsCont.MousePosition()};
-            lR.SetPositions(points);
-        }
-        else
-        {
-            Vector3[] bPoints = {bindPoints[0].position, bindPoints[1].position };
-            lR.SetPositions(bPoints);
-        }
+        SetLinePoints();
+    }
+    private void SetLinePoints()
+    {
+        Vector3[] bPoints = {bindPoints[0].position, bindPoints[1].position };
+        lR.SetPositions(bPoints);
     }
 }

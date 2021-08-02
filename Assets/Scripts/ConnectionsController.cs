@@ -7,61 +7,95 @@ public class ConnectionsController : MonoBehaviour
 {
     [SerializeField] private List<ConnectionsController> connections = new List<ConnectionsController>();
     [SerializeField] private GameObject line;
-    [SerializeField] private LineController currentLineDraw;
+    [SerializeField] private List<LineController> currentLinesDraw = new List<LineController>();
 
     private List<LineController> connectedLines = new List<LineController>();
     private NodeController node;
-    [SerializeField] private Transform circle;
+    private GameObject circle;
     private void Start()
     {
         node = GetComponent<NodeController>();
-        circle = transform.GetChild(1).transform;
+        circle = transform.GetChild(1).gameObject;
+    }
+    public void SetConnectionArea(bool dragablle)
+    {
+        if (!dragablle)
+        {
+            InputsController.startDrag += DrawCircle;
+        }
     }
     public bool AddConnection(ConnectionsController anotherNode)
     {
-        foreach(ConnectionsController cc in connections)
+        foreach (ConnectionsController cc in connections)
         {
             if (cc == anotherNode || this == anotherNode)
             {
                 return false;
             }
         }
-        foreach(string req in anotherNode.node.options.Requirements)
+        foreach (string req in anotherNode.node.options.Requirements)
         {
             if (node.options.Product == req)
             {
                 connections.Add(anotherNode);
-                connectedLines.Add(currentLineDraw);
-                anotherNode.connections.Add(this);
-                anotherNode.connectedLines.Add(currentLineDraw);
+                connectedLines.AddRange(currentLinesDraw);
 
-                currentLineDraw.bindPoints.Add(node.transform);
-                currentLineDraw.bindPoints.Add(anotherNode.transform);
-                currentLineDraw.enabled = false;
+                currentLinesDraw.Clear();
                 return true;
             }
         }
         return false;
     }
 
-    public void StartDrawLine(InputsController inputsController)
+    public void StartDrawLine(ConnectionsController lineTarget)
     {
         var gO = Instantiate(line, transform);
-        currentLineDraw = gO.GetComponent<LineController>();
-        currentLineDraw.inputsCont = inputsController;
+        var LC = gO.GetComponent<LineController>();
+        LC.BindPoints(lineTarget.transform);
+        LC.connectionsController = lineTarget;
+        currentLinesDraw.Add(LC);
     }
-    public void CancelDrawLine()
+    public void CancelDrawLine(ConnectionsController connect)
     {
-        Destroy(currentLineDraw.gameObject);
-    }
-    public void ActivateConnectdLines(bool b)
-    {
-        if(connectedLines.Count > 0)
+        if (currentLinesDraw.Count > 0)
         {
-            foreach(LineController lineController in connectedLines)
+            DeleteConnection(connect);
+            for (int i = 0; i < currentLinesDraw.Count; i++)
+            {
+                if (currentLinesDraw[i].connectionsController.Equals(connect))
+                {
+                    Destroy(currentLinesDraw[i].gameObject);
+                    currentLinesDraw.Remove(currentLinesDraw[i]);
+                    break;
+                }
+            }
+        }
+    }
+    public void ActivateConnectedLines(bool b)
+    {
+        if (connectedLines.Count > 0)
+        {
+            foreach (LineController lineController in connectedLines)
             {
                 lineController.enabled = b;
             }
         }
+    }
+    public void DeleteConnection(ConnectionsController connect)
+    {
+        for (int i = 0; i < connections.Count; i++)
+        {
+            if (connections[i].Equals(connect))
+            {
+                connections.Remove(connect);
+                Destroy(connectedLines[i].gameObject);
+                connectedLines.Remove(connectedLines[i]);
+                break;
+            }
+        }
+    }
+    private void DrawCircle(bool b)
+    {
+        circle.SetActive(b);
     }
 }

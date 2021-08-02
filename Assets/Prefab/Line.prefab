@@ -142,5 +142,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ed0748065873694798bf7fe677489cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputsCont: {fileID: 0}
+  target: {fileID: 0}
   bindPoints: []

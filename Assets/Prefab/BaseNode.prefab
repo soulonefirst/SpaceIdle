@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1421183458}
   - component: {fileID: 1421183460}
-  - component: {fileID: 1421183459}
-  m_Layer: 0
-  m_Name: Circle
+  - component: {fileID: 1177513856}
+  m_Layer: 7
+  m_Name: ConnectingArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!58 &1421183459
+--- !u!58 &1177513856
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -156,6 +156,7 @@ MonoBehaviour:
     Requirements: []
     ProduceSpeed: 0
     Product: 
+    Draggable: 0
   taskComplete: 0
 --- !u!114 &8680143015838117117
 MonoBehaviour:
@@ -172,7 +173,6 @@ MonoBehaviour:
   connections: []
   line: {fileID: 246675468100965573, guid: 9e85bce2e530c134f93186624d75c7be, type: 3}
   currentLineDraw: {fileID: 0}
-  circle: {fileID: 0}
 --- !u!61 &7546226113305200460
 BoxCollider2D:
   m_ObjectHideFlags: 0
