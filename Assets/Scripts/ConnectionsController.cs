@@ -9,7 +9,7 @@ public class ConnectionsController : MonoBehaviour
     [SerializeField] private GameObject line;
     [SerializeField] private List<LineController> currentLinesDraw = new List<LineController>();
 
-    private List<LineController> connectedLines = new List<LineController>();
+    [SerializeField]private List<LineController> connectedLines = new List<LineController>();
     private NodeController node;
     private GameObject circle;
     private void Start()
@@ -49,17 +49,19 @@ public class ConnectionsController : MonoBehaviour
 
     public void StartDrawLine(ConnectionsController lineTarget)
     {
-        var gO = Instantiate(line, transform);
-        var LC = gO.GetComponent<LineController>();
-        LC.BindPoints(lineTarget.transform);
-        LC.connectionsController = lineTarget;
-        currentLinesDraw.Add(LC);
+        if (!connections.Contains(lineTarget))
+        {
+            var gO = Instantiate(line, transform);
+            var LC = gO.GetComponent<LineController>();
+            LC.BindPoints(lineTarget.transform);
+            LC.connectionsController = lineTarget;
+            currentLinesDraw.Add(LC);
+        }
     }
     public void CancelDrawLine(ConnectionsController connect)
     {
         if (currentLinesDraw.Count > 0)
         {
-            DeleteConnection(connect);
             for (int i = 0; i < currentLinesDraw.Count; i++)
             {
                 if (currentLinesDraw[i].connectionsController.Equals(connect))
@@ -81,16 +83,15 @@ public class ConnectionsController : MonoBehaviour
             }
         }
     }
-    public void DeleteConnection(ConnectionsController connect)
+    public void DeleteConnection(List<ConnectionsController> hitObjects)
     {
         for (int i = 0; i < connections.Count; i++)
         {
-            if (connections[i].Equals(connect))
+            if (!hitObjects.Contains(connections[i]))
             {
-                connections.Remove(connect);
                 Destroy(connectedLines[i].gameObject);
                 connectedLines.Remove(connectedLines[i]);
-                break;
+                connections.Remove(connections[i]);
             }
         }
     }

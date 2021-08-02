@@ -100,7 +100,6 @@ public class InputsController : MonoBehaviour
                 AddConnections(hitObjects);
             }
         }
-
     }
     private void AddConnections(List<ConnectionsController> hitObjects)
     {
@@ -124,6 +123,7 @@ public class InputsController : MonoBehaviour
                 connectionTargets.Remove(connectionTargets[i]);
             }
         }
+        dragObject.DeleteConnection(hitObjects);
     }
 }
 
