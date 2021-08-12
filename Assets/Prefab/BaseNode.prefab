@@ -77,7 +77,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -147,17 +147,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e936993930dc513499aa5544965ce842, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodeId: Ore
-  options:
+  _nodeId: Crystal
+  Options:
     Id: 
     Description: 
     Icon: {fileID: 0}
     Color: {r: 0, g: 0, b: 0, a: 0}
     Requirements: []
     ProduceSpeed: 0
-    Product: 
+    BaseTask: 0
     Draggable: 0
-  taskComplete: 0
 --- !u!114 &8680143015838117117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,9 +169,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c00e39ef26b5254b9d4386a1a577613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connections: []
-  line: {fileID: 246675468100965573, guid: 9e85bce2e530c134f93186624d75c7be, type: 3}
-  currentLineDraw: {fileID: 0}
+  _outputConnections: []
+  _inputConnections: []
 --- !u!61 &7546226113305200460
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -238,13 +236,13 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
+  m_SortingOrder: 100
+  m_Sprite: {fileID: 21300000, guid: 4972aea98f0bcca40b985eb32435364a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.35, y: 1.45}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -320,7 +318,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 100
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b918e8d074c53ce44bbbe625ac509c8e, type: 3}
   m_Color: {r: 0.1792453, g: 0.16994482, b: 0.16994482, a: 1}
   m_FlipX: 0
@@ -429,7 +427,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7546226114663193812
 Transform:
   m_ObjectHideFlags: 0

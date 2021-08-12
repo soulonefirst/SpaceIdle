@@ -35,10 +35,10 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""RightClick"",
-                    ""type"": ""Button"",
-                    ""id"": ""60f1a2e0-8c15-43a5-9ab8-051d2e218e1e"",
-                    ""expectedControlType"": ""Button"",
+                    ""name"": ""Scroll"",
+                    ""type"": ""Value"",
+                    ""id"": ""a2a8daf2-3ce1-44ee-b47a-b71c1b550183"",
+                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -68,12 +68,58 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""6f5dadbd-bf41-4358-b0f6-9f1bd599d894"",
-                    ""path"": ""<Mouse>/rightButton"",
+                    ""id"": ""fdc4d4c7-5055-43fa-bc88-77013eacf819"",
+                    ""path"": ""<Mouse>/scroll"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Scroll"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""316d18c4-feb0-4177-ab09-37dd1e4d7b78"",
+            ""actions"": [
+                {
+                    ""name"": ""LeftClick"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""891b34b9-a75d-4b74-86ac-1379d407403c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""Point"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""df41fc35-6bcd-4045-bfce-264dd3a5bf8e"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""861d85ba-9b29-4e2e-bd19-f251dc3c3ff2"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Mouse + Keyboard"",
-                    ""action"": ""RightClick"",
+                    ""action"": ""LeftClick"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fb73cd6f-2a1a-4ce3-98b2-91432f9f82f0"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Point"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -103,7 +149,11 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
         m_Main = asset.FindActionMap("Main", throwIfNotFound: true);
         m_Main_LeftClick = m_Main.FindAction("LeftClick", throwIfNotFound: true);
         m_Main_MousePosition = m_Main.FindAction("MousePosition", throwIfNotFound: true);
-        m_Main_RightClick = m_Main.FindAction("RightClick", throwIfNotFound: true);
+        m_Main_Scroll = m_Main.FindAction("Scroll", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_LeftClick = m_Menu.FindAction("LeftClick", throwIfNotFound: true);
+        m_Menu_Point = m_Menu.FindAction("Point", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -155,14 +205,14 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
     private IMainActions m_MainActionsCallbackInterface;
     private readonly InputAction m_Main_LeftClick;
     private readonly InputAction m_Main_MousePosition;
-    private readonly InputAction m_Main_RightClick;
+    private readonly InputAction m_Main_Scroll;
     public struct MainActions
     {
         private @PlayerInputs m_Wrapper;
         public MainActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
         public InputAction @LeftClick => m_Wrapper.m_Main_LeftClick;
         public InputAction @MousePosition => m_Wrapper.m_Main_MousePosition;
-        public InputAction @RightClick => m_Wrapper.m_Main_RightClick;
+        public InputAction @Scroll => m_Wrapper.m_Main_Scroll;
         public InputActionMap Get() { return m_Wrapper.m_Main; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -178,9 +228,9 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @MousePosition.started -= m_Wrapper.m_MainActionsCallbackInterface.OnMousePosition;
                 @MousePosition.performed -= m_Wrapper.m_MainActionsCallbackInterface.OnMousePosition;
                 @MousePosition.canceled -= m_Wrapper.m_MainActionsCallbackInterface.OnMousePosition;
-                @RightClick.started -= m_Wrapper.m_MainActionsCallbackInterface.OnRightClick;
-                @RightClick.performed -= m_Wrapper.m_MainActionsCallbackInterface.OnRightClick;
-                @RightClick.canceled -= m_Wrapper.m_MainActionsCallbackInterface.OnRightClick;
+                @Scroll.started -= m_Wrapper.m_MainActionsCallbackInterface.OnScroll;
+                @Scroll.performed -= m_Wrapper.m_MainActionsCallbackInterface.OnScroll;
+                @Scroll.canceled -= m_Wrapper.m_MainActionsCallbackInterface.OnScroll;
             }
             m_Wrapper.m_MainActionsCallbackInterface = instance;
             if (instance != null)
@@ -191,13 +241,54 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
                 @MousePosition.started += instance.OnMousePosition;
                 @MousePosition.performed += instance.OnMousePosition;
                 @MousePosition.canceled += instance.OnMousePosition;
-                @RightClick.started += instance.OnRightClick;
-                @RightClick.performed += instance.OnRightClick;
-                @RightClick.canceled += instance.OnRightClick;
+                @Scroll.started += instance.OnScroll;
+                @Scroll.performed += instance.OnScroll;
+                @Scroll.canceled += instance.OnScroll;
             }
         }
     }
     public MainActions @Main => new MainActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private IMenuActions m_MenuActionsCallbackInterface;
+    private readonly InputAction m_Menu_LeftClick;
+    private readonly InputAction m_Menu_Point;
+    public struct MenuActions
+    {
+        private @PlayerInputs m_Wrapper;
+        public MenuActions(@PlayerInputs wrapper) { m_Wrapper = wrapper; }
+        public InputAction @LeftClick => m_Wrapper.m_Menu_LeftClick;
+        public InputAction @Point => m_Wrapper.m_Menu_Point;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void SetCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterface != null)
+            {
+                @LeftClick.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnLeftClick;
+                @LeftClick.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnLeftClick;
+                @LeftClick.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnLeftClick;
+                @Point.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+                @Point.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+                @Point.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+            }
+            m_Wrapper.m_MenuActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @LeftClick.started += instance.OnLeftClick;
+                @LeftClick.performed += instance.OnLeftClick;
+                @LeftClick.canceled += instance.OnLeftClick;
+                @Point.started += instance.OnPoint;
+                @Point.performed += instance.OnPoint;
+                @Point.canceled += instance.OnPoint;
+            }
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
     private int m_MouseKeyboardSchemeIndex = -1;
     public InputControlScheme MouseKeyboardScheme
     {
@@ -211,6 +302,11 @@ public class @PlayerInputs : IInputActionCollection, IDisposable
     {
         void OnLeftClick(InputAction.CallbackContext context);
         void OnMousePosition(InputAction.CallbackContext context);
-        void OnRightClick(InputAction.CallbackContext context);
+        void OnScroll(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
+        void OnLeftClick(InputAction.CallbackContext context);
+        void OnPoint(InputAction.CallbackContext context);
     }
 }

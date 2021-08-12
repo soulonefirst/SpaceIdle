@@ -22,10 +22,10 @@
                     "interactions": ""
                 },
                 {
-                    "name": "RightClick",
-                    "type": "Button",
-                    "id": "60f1a2e0-8c15-43a5-9ab8-051d2e218e1e",
-                    "expectedControlType": "Button",
+                    "name": "Scroll",
+                    "type": "Value",
+                    "id": "a2a8daf2-3ce1-44ee-b47a-b71c1b550183",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": ""
                 }
@@ -55,12 +55,58 @@
                 },
                 {
                     "name": "",
-                    "id": "6f5dadbd-bf41-4358-b0f6-9f1bd599d894",
-                    "path": "<Mouse>/rightButton",
+                    "id": "fdc4d4c7-5055-43fa-bc88-77013eacf819",
+                    "path": "<Mouse>/scroll",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scroll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "316d18c4-feb0-4177-ab09-37dd1e4d7b78",
+            "actions": [
+                {
+                    "name": "LeftClick",
+                    "type": "PassThrough",
+                    "id": "891b34b9-a75d-4b74-86ac-1379d407403c",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Point",
+                    "type": "PassThrough",
+                    "id": "df41fc35-6bcd-4045-bfce-264dd3a5bf8e",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "861d85ba-9b29-4e2e-bd19-f251dc3c3ff2",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "Mouse + Keyboard",
-                    "action": "RightClick",
+                    "action": "LeftClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb73cd6f-2a1a-4ce3-98b2-91432f9f82f0",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Point",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

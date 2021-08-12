@@ -1,129 +1,125 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.InputSystem.InputAction;
 
-public class InputsController : MonoBehaviour
+public class InputsController : Singleton<InputsController>
 {
-    private PlayerInputs playerInput;
-    private Camera cam;
-    [SerializeField] private List<ConnectionsController> connectionTargets = new List<ConnectionsController>();
-    [SerializeField] private ConnectionsController dragObject;
-    private int draggableMask;
-    private int connectingMask;
+    [SerializeField] private List<ConnectionsController> _connectionTargets = new List<ConnectionsController>();
+    [SerializeField] private ConnectionsController _dragObject;
 
-    public static event Action<bool> startDrag;
+    private PlayerInputs _playerInput;
+    private Camera _cam;
+
+    private int _draggableMask;
+    private int _connectingMask;
+
+    public static event Action<ConnectionsController> StartDrag;
     private void Start()
     {
-        cam = Camera.main;
-        draggableMask = LayerMask.GetMask("Draggable");
-        connectingMask = LayerMask.GetMask("Connecting");
+        _cam = Camera.main;
+        _draggableMask = LayerMask.GetMask("Draggable");
+        _connectingMask = LayerMask.GetMask("ConnectingArea");
     }
     private void OnEnable()
     {
-        if (playerInput == null)
+        if (_playerInput == null)
         {
-            playerInput = new PlayerInputs();
+            _playerInput = new PlayerInputs();
         }
-        playerInput.Main.Enable();
+        _playerInput.Main.Enable();
 
-        playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit(draggableMask));
-        playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHit(connectingMask));
-        playerInput.Main.MousePosition.performed += x => MouseMove();
+        _playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit(_draggableMask));
+        _playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHits(_connectingMask));
+        _playerInput.Main.Scroll.performed += x => CameraMoveController.instance.OnScroll(x);
+         _playerInput.Main.MousePosition.performed += x => MouseMove(x);
     }
 
     private void OnDisable()
     {
-        playerInput.Main.Disable();
+        _playerInput.Main.Disable();
     }
     private void LeftClickStart(RaycastHit2D hit)
     {
-        if (hit && hit.transform.TryGetComponent(out ConnectionsController connect))
+        if (hit && hit.transform.TryGetComponent(out ConnectionsController hitObject))
         {
-            dragObject = connect;
-            dragObject.ActivateConnectedLines(true);
-            startDrag?.Invoke(true);
-        }
+            _dragObject = hitObject;
+            _dragObject.ActivateConnectedLines(true);
+            _dragObject.ShowConnectionArea(_dragObject);
+            StartDrag?.Invoke(_dragObject);
+        }else
+            _playerInput.Main.SetCallbacks(CameraMoveController.instance);
     }
-    private void LeftClickEnd(RaycastHit2D hit)
+    private void LeftClickEnd(RaycastHit2D[] hits)
     {
-        if (dragObject != null && connectionTargets.Count > 0)
+        if (_dragObject != null)
         {
-            foreach (ConnectionsController connection in connectionTargets)
-            {
-                dragObject.AddConnection(connection);
-            }
+            _dragObject = null;
+            _connectionTargets.Clear();
+            StartDrag?.Invoke(null);
         }
-        if (dragObject != null)
-        {
-            dragObject = null;
-            connectionTargets.Clear();
-            startDrag?.Invoke(false);
-        }
+        else
+            _playerInput.Main.SetCallbacks(null);
     }
     private RaycastHit2D GetRaycastHit(int layer)
     {
-        Ray ray = cam.ScreenPointToRay(playerInput.Main.MousePosition.ReadValue<Vector2>());
+        Ray ray = _cam.ScreenPointToRay(_playerInput.Main.MousePosition.ReadValue<Vector2>());
         return Physics2D.GetRayIntersection(ray, Mathf.Infinity, layer);
     }
     private RaycastHit2D[] GetRaycastHits(int layer)
     {
-        Ray ray = cam.ScreenPointToRay(playerInput.Main.MousePosition.ReadValue<Vector2>());
+        Ray ray = _cam.ScreenPointToRay(_playerInput.Main.MousePosition.ReadValue<Vector2>());
         return Physics2D.GetRayIntersectionAll(ray, Mathf.Infinity, layer);
     }
-    public Vector2 MousePosition()
+    private Vector2 MousePosition(Vector2 mousePosition)
     {
-        var mpp = playerInput.Main.MousePosition.ReadValue<Vector2>();
-        var mousePoint = new Vector3(mpp.x, mpp.y, 10);
-        return cam.ScreenToWorldPoint(mousePoint);
+        var mousePoint = new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z * -1);
+        return _cam.ScreenToWorldPoint(mousePoint);
     }
-    private void MouseMove()
+    private void MouseMove(CallbackContext callback)
     {
-        if (dragObject != null)
+        if (_dragObject != null)
         {
-            dragObject.transform.position = MousePosition();
+            _dragObject.transform.position = MousePosition(callback.ReadValue<Vector2>());
 
-            var hits = GetRaycastHits(connectingMask);
+            var hits = GetRaycastHits(_connectingMask);
             var hitObjects = new List<ConnectionsController>();
             foreach (RaycastHit2D hit in hits)
             {
                 if (hit.transform.parent.TryGetComponent(out ConnectionsController hitConnect))
                     hitObjects.Add(hit.transform.parent.GetComponent<ConnectionsController>());
             }
-            if (hits.Length > 0 && connectionTargets.Count == 0)
+
+            if (_connectionTargets.Count != hits.Length)
             {
-                AddConnections(hitObjects);
-            }
-            else if (connectionTargets.Count != hits.Length)
-            {
-                RemoveExcessConnections(hitObjects);
+                CheckConnections(hitObjects);
                 AddConnections(hitObjects);
             }
         }
+
     }
     private void AddConnections(List<ConnectionsController> hitObjects)
     {
-        foreach (ConnectionsController hitConnect in hitObjects)
+        foreach (ConnectionsController hitObject in hitObjects)
         {
-            if (!connectionTargets.Contains(hitConnect))
+            if (!_connectionTargets.Contains(hitObject))
             {
-                dragObject.StartDrawLine(hitConnect);
-                connectionTargets.Add(hitConnect);
+                _dragObject.AddConnention(hitObject);
+                _connectionTargets.Add(hitObject);
             }
 
         }
     }
-    private void RemoveExcessConnections(List<ConnectionsController> hitObjects)
+    private void CheckConnections(List<ConnectionsController> hitObjects)
     {
-        for (int i = 0; i < connectionTargets.Count; i++)
+        for (int i = 0; i < _connectionTargets.Count; i++)
         {
-            if (!hitObjects.Contains(connectionTargets[i]))
+            if (!hitObjects.Contains(_connectionTargets[i]))
             {
-                dragObject.CancelDrawLine(connectionTargets[i]);
-                connectionTargets.Remove(connectionTargets[i]);
+                _connectionTargets.Remove(_connectionTargets[i]);
             }
         }
-        dragObject.DeleteConnection(hitObjects);
+        _dragObject.DeleteExcessConnection(hitObjects);
     }
 }
 
