@@ -32,11 +32,11 @@ public sealed class CreateOre : TaskHolder
     {
         Vector2 pPos = Parent.transform.position;
         base.OnDone();
-        GameObject.Instantiate(LoadAssetBundle.GetPrefab("OrePiece"),
+        GameObject.Instantiate(LoadAssetBundle.instance.GetPrefab("OrePiece"),
             new Vector3(pPos.x + Random.Range(-1.0f, 1.0f), pPos.y + Random.Range(-1.0f, 1.0f), 0),
             Quaternion.identity,
             Parent.transform);
-        XPManager.ReciveOreXP();
+        XPManager.instance.ReciveOreXP();
     }
 }
 public sealed class OreWork : TaskHolder
@@ -50,27 +50,29 @@ public sealed class OreWork : TaskHolder
         _areaTransform = parent.transform.GetChild(1).transform;
         _oreLayer = LayerMask.GetMask("Ore");
     }
-    protected override void OnStarted()
-    {
-        base.OnStarted();
-    }
-    protected override bool Update()
+    protected override bool OnStarted()
     {
         if (_oreCollider == false)
         {
             _oreCollider = Physics2D.CircleCast(_areaTransform.position, _areaTransform.localScale.x / 2, Vector2.zero, Mathf.Infinity, _oreLayer);
             if (_oreCollider == false)
             {
-                Wait(1);
-                return true;
+                Parent.StartCoroutine(AddChildInstructuion(new Wait(1f, Parent)));
+                return false;
             }
             else
                 _oreCollider.transform.gameObject.layer = 0;
         }
+
+        return base.OnStarted();        
+    }
+    protected override bool Update()
+    {
+        
         var aPos = _areaTransform.position;
         var oPos = _oreCollider.transform.position;
 
-        _oreCollider.transform.position -= (oPos -aPos) / _nodeOptions.ProduceSpeed / 10;
+        _oreCollider.transform.position -= (oPos -aPos) / _nodeOptions.Stats.ProduceSpeed / 10;
         return base.Update();
     }
     protected override void OnTerminated()
@@ -107,14 +109,15 @@ public abstract class TaskHolder : Instruction
     {
         _barTrans.localScale = Vector3.zero;
     }
-    protected override void OnStarted()
+    protected override bool OnStarted()
     {
         _progressBar.SetActive(true);
+        return true;
     }
     protected override bool Update()
     {
-        Wait(0.1f);
-        float newScaleX = _barTrans.localScale.x + (1 / _nodeOptions.ProduceSpeed / 10);
+        Parent.StartCoroutine(AddChildInstructuion(new Wait(0.1f, Parent)));
+        float newScaleX = _barTrans.localScale.x + (1 / _nodeOptions.Stats.ProduceSpeed / 10);
         _barTrans.localScale = new Vector3(newScaleX, 1, 1);
         if (newScaleX >= 1.0f)
         {

@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class CVSLoader : MonoBehaviour
+public class CVSLoader : Singleton<CVSLoader>
 {
     private bool _debug = true;
     private const string url = "https://docs.google.com/spreadsheets/d/*/gviz/tq?tqx=out:csv&sheet=";

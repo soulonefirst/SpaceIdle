@@ -12,9 +12,9 @@ public class LineController : MonoBehaviour
         _lR = GetComponent<LineRenderer>();
         SetLinePoints();
     }
-    public void BindPoints(Transform target)
+    public void BindPoints(Transform source,Transform target)
     {
-        _bindedPoints[0]  = transform;
+        _bindedPoints[0]  = source;
         _bindedPoints[1] = target.transform;
     }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SheetProcessor : MonoBehaviour
+public class SheetProcessor : Singleton<SheetProcessor>
 {
     private const char _cellSeporator = ',';
     private const char _inCellSeporator = ';';
@@ -19,6 +19,7 @@ public class SheetProcessor : MonoBehaviour
         {"brown", new Color(139/255f,69/255f,19/255f) }
     };
     private Dictionary<string,TaskName> _taskName = EnumHelper.GetStringValuesPair<TaskName>();
+    private Dictionary<string, NodeType> _nodeType = EnumHelper.GetStringValuesPair<NodeType>();
 
     public NodesData ProcessNodeData(string cvsRawData)
     {
@@ -38,17 +39,22 @@ public class SheetProcessor : MonoBehaviour
             {
                 Id = cells[0],
                 Description = cells[1],
-                Icon = LoadAssetBundle.GetSprite(cells[2]),
+                Icon = LoadAssetBundle.instance.GetSprite(cells[2]),
                 Color = ParseColor(cells[3]),
                 Requirements = ParseRequirements(cells[4]),
-                ProduceSpeed = ParseFloat(cells[5]),
-                BaseTask = _taskName[cells[6]],
-                Draggable = ParseBool(cells[7])           
+                BaseTask = _taskName[cells[5]],
+                NodeType = _nodeType[cells[6]],      
+                Stats = new Stats 
+                {
+                    ProduceSpeed = ParseFloat(cells[7]),
+                    ConnectionAreaSize = ParseFloat(cells[8]), 
+                    HP = ParseInt(cells[9])
+                },
             }) ;
         }
         return data;
     }
-    public void Test(string cvsRawData)
+    public void ProcessOreXP(string cvsRawData)
     {
         char lineEnding = GetPlatformSpecificLineEnd();
         string[] rows = cvsRawData.Split(lineEnding);
@@ -58,10 +64,9 @@ public class SheetProcessor : MonoBehaviour
             string[] cells = rows[i].Split(_cellSeporator);
             for (int n = 0; n < cells.Length; n++)
             {
-                cells[n] = cells[n].Trim('"');
-                Debug.Log(cells[n]);
+                cells[n] = cells[n].Trim('"');                
             }
-            
+            XPManager.instance.OreXPLevls[i] = ParseInt(cells[0]);
         }
     }
     private List<string> ParseRequirements(string r) 

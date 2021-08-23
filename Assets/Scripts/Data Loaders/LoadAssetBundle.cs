@@ -4,17 +4,12 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public class LoadAssetBundle : MonoBehaviour
+public class LoadAssetBundle : Singleton<LoadAssetBundle>
 {
-    public static bool assetsLoaded;
-    private static Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
-    private static Dictionary<string,Sprite> sprites = new Dictionary<string, Sprite>();
+    private Dictionary<string, GameObject> prefabs = new Dictionary<string, GameObject>();
+    private Dictionary<string,Sprite> sprites = new Dictionary<string, Sprite>();
     [SerializeField] private string[] assetBundleNames;
 
-    private void Awake()
-    {
-        LoadAssetsBundles();
-    }
     public void LoadAssetsBundles()
     {
         foreach (string s in assetBundleNames)
@@ -22,7 +17,7 @@ public class LoadAssetBundle : MonoBehaviour
             StartCoroutine(LoadAsset(s));            
         }
     }
-    public static Sprite GetSprite(string name)
+    public Sprite GetSprite(string name)
     {        
         if(sprites.TryGetValue(name, out Sprite sprite))
         {
@@ -31,7 +26,7 @@ public class LoadAssetBundle : MonoBehaviour
         Debug.LogError("Can't find sprite named " + name);
         return null;
     }
-    public static GameObject GetPrefab(string name)
+    public GameObject GetPrefab(string name)
     {
         GameObject p;
         if(prefabs.TryGetValue(name, out p))
@@ -76,7 +71,7 @@ public class LoadAssetBundle : MonoBehaviour
                 break;
         }
         if (assetBundleName == assetBundleNames[assetBundleNames.Length - 1])
-            assetsLoaded = true;
+            
         Debug.Log(assetBundleName + " Loaded");
     }
 }

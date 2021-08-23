@@ -14,31 +14,27 @@ public interface IInstruction
 
     event Action<Instruction> Started;
     event Action<Instruction> Paused;
-    event Action<Instruction> Cancelled;
+    event Action<Instruction> Terminated;
     event Action<Instruction> Done;
 }
 
 public abstract class Instruction : IEnumerator, IInstruction
 {
-    private Instruction current;
-    object IEnumerator.Current => current;
+    private Instruction _current;
+    object IEnumerator.Current => _current;
 
     private object routine;
     protected bool IsLooped;
-    private float _timeToWait;
     public MonoBehaviour Parent { get; private set; }
 
     public bool IsExecuting { get; private set; }
     public bool IsPaused { get; private set; }
-    public bool IsWaiting { get; private set; }
-
-    private bool IsStopped { get; set; }
+    private bool IsStopped { get; set; } = true;
 
     public event Action<Instruction> Started;
     public event Action<Instruction> Paused;
     public event Action<Instruction> Terminated;
     public event Action<Instruction> Done;
-    public event Action<Instruction> Cancelled;
 
     protected Instruction(MonoBehaviour parent) => Parent = parent;
     void IEnumerator.Reset()
@@ -55,7 +51,8 @@ public abstract class Instruction : IEnumerator, IInstruction
         {
             if (IsLooped)
             {
-                OnStarted();
+                if (!OnStarted())
+                    return true;
                 IsStopped = false;
                 return true;
             }
@@ -72,17 +69,11 @@ public abstract class Instruction : IEnumerator, IInstruction
             Started?.Invoke(this);
         }
 
-        if (current != null)
+        if (_current != null)
             return true;
 
         if (IsPaused)
         {
-            return true;
-        }
-        if (IsWaiting)
-        {
-            if (Time.time >= _timeToWait)
-                IsWaiting = false;
             return true;
         }
 
@@ -138,15 +129,15 @@ public abstract class Instruction : IEnumerator, IInstruction
 
         return false;
     }
-    public void Wait(float t)
+    public IEnumerator AddChildInstructuion(Instruction instruction)
     {
-        _timeToWait = Time.time + t;
-        IsWaiting = true;
+        _current = instruction;
+        yield return instruction;
+        _current = null;
     }
-
     public Instruction Execute()
     {
-        if (current != null)
+        if (_current != null)
         {
             Debug.LogWarning($"Instruction { GetType().Name} is currently waiting for another one and can't be stared right now.");
             return this;
@@ -170,7 +161,7 @@ public abstract class Instruction : IEnumerator, IInstruction
 
     public Instruction Execute(MonoBehaviour parent)
     {
-        if (current != null)
+        if (_current != null)
         {
             Debug.LogWarning($"Instruction { GetType().Name} is currently waiting for another one and can't be stared right now.");
             return this;
@@ -202,15 +193,52 @@ public abstract class Instruction : IEnumerator, IInstruction
         Done = null;
     }
 
-    protected virtual void OnStarted() { }
+    protected virtual bool OnStarted() { return true; }
     protected virtual void OnPaused() { }
     protected virtual void OnResumed() { }
     protected virtual void OnTerminated() { }
     protected virtual void OnDone() { }
-
     protected abstract bool Update();
 }
+public sealed class Wait : Instruction
+{
+    public float Delay { get; set; }
+    private float startTime;
 
+    protected override bool Update()
+    {
+        return Time.time - startTime < Delay;
+    }
+
+    public Wait(MonoBehaviour parent) : base(parent) { }
+
+    public Wait(float delay, MonoBehaviour parent) : base(parent)
+    {
+        Delay = delay;
+    }
+
+    protected override bool OnStarted()
+    {
+        startTime = Time.time;
+        return true;
+    }
+
+    public Instruction Execute(float delay)
+    {
+        Delay = delay;
+
+        return base.Execute();
+    }
+    protected override void OnPaused()
+    {
+        Delay -= Time.time - startTime;
+    }
+
+    protected override void OnResumed()
+    {
+        startTime = Time.time;
+    }
+}
 
 
 

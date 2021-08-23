@@ -3,14 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class XPManager
+public class XPManager : Singleton<XPManager>
 {
-    public static int OreXP;
-    public static int OverallXP;
+    private int OreXP;
+    private int OverallXP;
 
-    public static void ReciveOreXP()
+    public int[] OreXPLevls = new int[100];
+    private int CurentOreLevl;
+
+    public void ReciveOreXP()
     {
         OreXP++;
         OverallXP++;
+    }
+    public void GetCurentLevl()
+    {
+
     }
 }

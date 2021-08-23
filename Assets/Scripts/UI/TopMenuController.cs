@@ -12,17 +12,20 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
     private ObjectPool<GameObject> _objectPool;
     private bool _isMunuShown;
 
+    private Text _overallXPText;
     private void Start()
     {
-        LoadOptions();
+        DataLoader.instance.OnDataLoaded += LoadOptions;
+        _overallXPText = GameObject.Find("OverallXPAmount").GetComponent<Text>();
+        Debug.Log(_overallXPText.gameObject.name);
     }
-    private async void LoadOptions()
+    private void Update()
     {
-        while (!LoadAssetBundle.assetsLoaded)
-        {
-            await Task.Yield(); 
-        }
-         var itemPrefab =   LoadAssetBundle.GetPrefab("ResourceMenuItem");
+        _overallXPText.text = "";
+    }
+    private void LoadOptions()
+    {
+         var itemPrefab =   LoadAssetBundle.instance.GetPrefab("ResourceMenuItem");
         _objectPool = new ObjectPool<GameObject>(itemPrefab, transform.GetChild(0));
 
         CreateMenuItem(itemPrefab,"Ore XP ");
@@ -31,6 +34,7 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
     private void CreateMenuItem(GameObject prefab, string text)
     {
         var obj = Instantiate(prefab);
+        obj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0,-80 * _objectPool.Count());
         var t = obj.transform.GetChild(0).GetComponent<Text>();
         t.text = text;
         var s = obj.transform.GetChild(1).GetComponent<Slider>();
@@ -57,11 +61,8 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
         for (int i = _activeItems.Count-1; i >= 0 ; i--)
         {
             _objectPool.Push(_activeItems[i]);
+            _activeItems.RemoveAt(i);
         }
         return false;
-    }
-    private void Update()
-    {
-
     }
 }

@@ -12,7 +12,9 @@ public class ConnectionsController : MonoBehaviour
     [SerializeField] private List<OutputConnection> _outputConnections = new List<OutputConnection>();
     [SerializeField] private List<ConnectionsController> _inputConnections = new List<ConnectionsController>();
 
-    private GameObject _line;
+    private static ObjectPool<GameObject> _linePool;
+
+    private GameObject _linePrefab;
     private NodeController _node;
     private GameObject _circle;
 
@@ -20,7 +22,13 @@ public class ConnectionsController : MonoBehaviour
     {
         _node = GetComponent<NodeController>();
         _circle = transform.GetChild(1).gameObject;
-        _line = LoadAssetBundle.GetPrefab("Line");
+        DataLoader.instance.OnDataLoaded += SetPool;
+    }
+    private void SetPool()
+    {
+        _linePrefab = LoadAssetBundle.instance.GetPrefab("Line");
+        if(_linePool == null)
+        _linePool = new ObjectPool<GameObject>(_linePrefab, GameObject.Find("ObjectPool").transform ,0);
     }
     public void ChangeInputConnection(ConnectionsController input)
     {
@@ -54,9 +62,11 @@ public class ConnectionsController : MonoBehaviour
             _node.Task?.Terminate();
         }
     }
-    public void SetConnectionArea(bool dragablle)
+    public void SetConnectionArea()
     {
         _circle.GetComponent<SpriteRenderer>().color = _node.Options.Color;
+        var scale = _node.Options.Stats.ConnectionAreaSize;
+        _circle.transform.localScale = new Vector3(scale, scale, 1);
         InputsController.StartDrag += ShowConnectionArea;
     }
     public void ShowConnectionArea(ConnectionsController dragObject)
@@ -75,9 +85,10 @@ public class ConnectionsController : MonoBehaviour
     {
         if (!CheckContainConnection(hitObject))
         {
-            var gO = Instantiate(_line, transform);
+            var gO = _linePool.Pop();
+            gO.transform.SetParent(transform);
             var LC = gO.GetComponent<LineController>();
-            LC.BindPoints(hitObject.transform);
+            LC.BindPoints(transform,hitObject.transform);
 
             _outputConnections.Add(new OutputConnection { Target = hitObject, Line = LC });
             hitObject.ChangeInputConnection(this);
@@ -91,7 +102,7 @@ public class ConnectionsController : MonoBehaviour
         {
             if (!hitObjects.Contains(_outputConnections[i].Target))
             {
-                Destroy(_outputConnections[i].Line.gameObject);
+                _linePool.Push(_outputConnections[i].Line.gameObject);
 
                 _outputConnections[i].Target.ChangeInputConnection(this);
                 _outputConnections.Remove(_outputConnections[i]);

@@ -13,10 +13,10 @@ public class NodeOptions
     public string Description;
     public Sprite Icon;
     public Color Color;
+    public Stats Stats;
     public List<string> Requirements;
-    public float ProduceSpeed;
     public TaskName BaseTask;
-    public bool Draggable;
+    public NodeType NodeType;
 
     public override string ToString()
     {
@@ -25,7 +25,23 @@ public class NodeOptions
         {
             requirements += req + ", ";
         }
-        return $"Id {Id} \n {Description} \nSprite {Icon} \nColor {Color} \n Color \n {requirements} \n {ProduceSpeed} \n {BaseTask}";
+        return $"Id {Id} \n {Description} \nSprite {Icon} \nColor {Color} \n Color \n {requirements} \n {BaseTask}\n {NodeType} ";
     }
 }
-
+public enum NodeStats
+{
+    ProduceSpeed,
+    ConnectionAreaSize,
+    HP
+}
+public struct Stats
+{
+    public float ProduceSpeed;
+    public float ConnectionAreaSize;
+    public float HP;
+}
+public enum NodeType
+{
+    Station,
+    Ship
+}

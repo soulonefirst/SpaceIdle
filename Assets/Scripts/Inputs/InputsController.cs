@@ -8,6 +8,7 @@ public class InputsController : Singleton<InputsController>
     [SerializeField] private List<ConnectionsController> _connectionTargets = new List<ConnectionsController>();
     [SerializeField] private ConnectionsController _dragObject;
 
+
     private PlayerInputs _playerInput;
     private Camera _cam;
 
@@ -32,7 +33,7 @@ public class InputsController : Singleton<InputsController>
         _playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit(_draggableMask));
         _playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHits(_connectingMask));
         _playerInput.Main.Scroll.performed += x => CameraMoveController.instance.OnScroll(x);
-         _playerInput.Main.MousePosition.performed += x => MouseMove(x);
+        _playerInput.Main.MousePosition.performed += x => MouseMove(x);
     }
 
     private void OnDisable()
@@ -54,6 +55,7 @@ public class InputsController : Singleton<InputsController>
     {
         if (_dragObject != null)
         {
+            _dragObject.ActivateConnectedLines(false);
             _dragObject = null;
             _connectionTargets.Clear();
             StartDrag?.Invoke(null);

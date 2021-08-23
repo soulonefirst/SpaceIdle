@@ -15,7 +15,7 @@ public class NodeController : MonoBehaviour
     public TaskHolder Task;
     private void Awake()
     {
-        GoogleSheetLoader.OnProcessData += UpdateOptions;
+        DataLoader.instance.OnNodeDataLoaded += UpdateOptions;
     }
 
     private void Start()
@@ -27,14 +27,12 @@ public class NodeController : MonoBehaviour
     {
         Options = nodesData.NodeOptionsList.Find(x => x.Id == _nodeId);
         SetGameObject();
-        _connections.SetConnectionArea(Options.Draggable);
+        _connections.SetConnectionArea();
         Task = TaskManager.GetTask(Options.BaseTask, this);
     }
     private void SetGameObject()
     {
         gameObject.name = _nodeId;
         _spriteRenderer.sprite = Options.Icon;
-        if (Options.Draggable)
-            gameObject.layer = 6;
     }
 }

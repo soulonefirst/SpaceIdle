@@ -38,7 +38,10 @@ public class Singleton<T> : MonoBehaviour where T : Component
             DontDestroyOnLoad(gameObject);
         }
         else
+        {
             Destroy(gameObject);
+            Debug.LogError(_instance + " was destroyed. Another instance exist.");
+        }
     }
 
     protected virtual void OnApplicationQuit()
