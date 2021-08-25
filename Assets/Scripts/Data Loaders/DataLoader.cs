@@ -1,16 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(CVSLoader), typeof(SheetProcessor),typeof(LoadAssetBundle))]
 public class DataLoader : Singleton<DataLoader>
 {
     public event Action<NodesData> OnNodeDataLoaded;
-
-
+    
     public event Action OnDataLoaded;
 
-    [SerializeField] private string _sheetId;
+    [FormerlySerializedAs("_sheetId")] [SerializeField] private string sheetId;
     [SerializeField] private string[] _pagesId; 
     [SerializeField] private NodesData _nodeData;
     [SerializeField] private int[] _oreData;
@@ -35,7 +35,7 @@ public class DataLoader : Singleton<DataLoader>
         _loadAssetBundle.LoadAssetsBundles();
         foreach(string page in _pagesId)
         {
-            _cvsLoader.DownloadTable(_sheetId, page, OnRawCVSLoaded); 
+            _cvsLoader.DownloadTable(sheetId, page, OnRawCVSLoaded); 
         }
     }
 

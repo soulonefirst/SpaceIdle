@@ -12,12 +12,13 @@ public class CameraMoveController : Singleton<CameraMoveController>, IMainAction
     private Transform _camaraObj;
     private Vector2Control _delta;
     private BackgroundController _background;
+    
 
     private void Start()
     {
         _delta = InputSystem.GetDevice<Mouse>().delta;
         _camaraObj = Camera.main.gameObject.transform;
-        _background = BackgroundController.instance;
+        _background = BackgroundController.Instance;
     }
 
     public void OnLeftClick(CallbackContext context)

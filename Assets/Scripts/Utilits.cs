@@ -8,7 +8,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
 
     private static bool _isApplicationQuitting;
 
-    public static T instance
+    public static T Instance
     {
         get
         {
@@ -40,7 +40,7 @@ public class Singleton<T> : MonoBehaviour where T : Component
         else
         {
             Destroy(gameObject);
-            Debug.LogError(_instance + " was destroyed. Another instance exist.");
+            Debug.LogError($"{_instance} was destroyed. Another instance exist.");
         }
     }
 
@@ -61,6 +61,7 @@ public static class EnumHelper
 
         return values;
     }
+
     public static Dictionary<string,T> GetStringValuesPair<T>() where T : Enum
     {
         var objects = Enum.GetValues(typeof(T));

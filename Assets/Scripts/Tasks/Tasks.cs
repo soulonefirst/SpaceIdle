@@ -32,11 +32,11 @@ public sealed class CreateOre : TaskHolder
     {
         Vector2 pPos = Parent.transform.position;
         base.OnDone();
-        GameObject.Instantiate(LoadAssetBundle.instance.GetPrefab("OrePiece"),
+        GameObject.Instantiate(LoadAssetBundle.Instance.GetPrefab("OrePiece"),
             new Vector3(pPos.x + Random.Range(-1.0f, 1.0f), pPos.y + Random.Range(-1.0f, 1.0f), 0),
             Quaternion.identity,
             Parent.transform);
-        XPManager.instance.ReciveOreXP();
+        XPManager.Instance.ReciveOreXP();
     }
 }
 public sealed class OreWork : TaskHolder

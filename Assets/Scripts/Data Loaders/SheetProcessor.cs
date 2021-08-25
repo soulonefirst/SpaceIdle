@@ -39,7 +39,7 @@ public class SheetProcessor : Singleton<SheetProcessor>
             {
                 Id = cells[0],
                 Description = cells[1],
-                Icon = LoadAssetBundle.instance.GetSprite(cells[2]),
+                Icon = LoadAssetBundle.Instance.GetSprite(cells[2]),
                 Color = ParseColor(cells[3]),
                 Requirements = ParseRequirements(cells[4]),
                 BaseTask = _taskName[cells[5]],
@@ -66,7 +66,7 @@ public class SheetProcessor : Singleton<SheetProcessor>
             {
                 cells[n] = cells[n].Trim('"');                
             }
-            XPManager.instance.OreXPLevls[i] = ParseInt(cells[0]);
+            XPManager.Instance.OreXPLevls[i] = ParseInt(cells[0]);
         }
     }
     private List<string> ParseRequirements(string r) 

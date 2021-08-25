@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.InputSystem.InputAction;
+using Debug = System.Diagnostics.Debug;
 
 public class InputsController : Singleton<InputsController>
 {
@@ -32,7 +33,7 @@ public class InputsController : Singleton<InputsController>
 
         _playerInput.Main.LeftClick.started += x => LeftClickStart(GetRaycastHit(_draggableMask));
         _playerInput.Main.LeftClick.canceled += x => LeftClickEnd(GetRaycastHits(_connectingMask));
-        _playerInput.Main.Scroll.performed += x => CameraMoveController.instance.OnScroll(x);
+        _playerInput.Main.Scroll.performed += x => CameraMoveController.Instance.OnScroll(x);
         _playerInput.Main.MousePosition.performed += x => MouseMove(x);
     }
 
@@ -49,7 +50,7 @@ public class InputsController : Singleton<InputsController>
             _dragObject.ShowConnectionArea(_dragObject);
             StartDrag?.Invoke(_dragObject);
         }else
-            _playerInput.Main.SetCallbacks(CameraMoveController.instance);
+            _playerInput.Main.SetCallbacks(CameraMoveController.Instance);
     }
     private void LeftClickEnd(RaycastHit2D[] hits)
     {
@@ -75,6 +76,7 @@ public class InputsController : Singleton<InputsController>
     }
     private Vector2 MousePosition(Vector2 mousePosition)
     {
+        Debug.Assert(Camera.main != null, "Camera.main != null");
         var mousePoint = new Vector3(mousePosition.x, mousePosition.y, Camera.main.transform.position.z * -1);
         return _cam.ScreenToWorldPoint(mousePoint);
     }

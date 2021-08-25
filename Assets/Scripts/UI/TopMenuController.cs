@@ -15,7 +15,7 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
     private Text _overallXPText;
     private void Start()
     {
-        DataLoader.instance.OnDataLoaded += LoadOptions;
+        DataLoader.Instance.OnDataLoaded += LoadOptions;
         _overallXPText = GameObject.Find("OverallXPAmount").GetComponent<Text>();
         Debug.Log(_overallXPText.gameObject.name);
     }
@@ -25,7 +25,7 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
     }
     private void LoadOptions()
     {
-         var itemPrefab =   LoadAssetBundle.instance.GetPrefab("ResourceMenuItem");
+         var itemPrefab =   LoadAssetBundle.Instance.GetPrefab("ResourceMenuItem");
         _objectPool = new ObjectPool<GameObject>(itemPrefab, transform.GetChild(0));
 
         CreateMenuItem(itemPrefab,"Ore XP ");

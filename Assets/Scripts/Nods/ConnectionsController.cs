@@ -22,11 +22,11 @@ public class ConnectionsController : MonoBehaviour
     {
         _node = GetComponent<NodeController>();
         _circle = transform.GetChild(1).gameObject;
-        DataLoader.instance.OnDataLoaded += SetPool;
+        DataLoader.Instance.OnDataLoaded += SetPool;
     }
     private void SetPool()
     {
-        _linePrefab = LoadAssetBundle.instance.GetPrefab("Line");
+        _linePrefab = LoadAssetBundle.Instance.GetPrefab("Line");
         if(_linePool == null)
         _linePool = new ObjectPool<GameObject>(_linePrefab, GameObject.Find("ObjectPool").transform ,0);
     }

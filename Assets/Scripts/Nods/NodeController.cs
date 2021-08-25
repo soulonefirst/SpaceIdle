@@ -15,7 +15,7 @@ public class NodeController : MonoBehaviour
     public TaskHolder Task;
     private void Awake()
     {
-        DataLoader.instance.OnNodeDataLoaded += UpdateOptions;
+        DataLoader.Instance.OnNodeDataLoaded += UpdateOptions;
     }
 
     private void Start()
