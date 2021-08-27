@@ -1,55 +1,87 @@
-
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
-public enum TaskName
+public abstract class TaskHolder : Instruction
 {
-    OreWork,
-    CreateOre,
-    CreateCrystal,
-    CrystalWork
-}
-public static class TaskManager
-{
-    public static TaskHolder GetTask(TaskName task, NodeController node)
+    private readonly GameObject _progressBar;
+    private readonly Transform _barTrans;
+    protected readonly NodeOptions NodeOptions;
+
+    protected TaskHolder(MonoBehaviour parent) : base(parent)
     {
-        switch (task)
-        {
-            case TaskName.CreateOre:
-                return new CreateOre(node);
-            case TaskName.OreWork:
-                return new OreWork(node);
+        _progressBar = parent.transform.GetChild(0).gameObject;
+        _barTrans = _progressBar.transform.Find("Bar").transform;
+        var p = parent as NodeController;
+        NodeOptions = p.Options;
+        IsLooped = true;
+    }
+    protected virtual void ResetBar()
+    {
+        _barTrans.localScale = Vector3.zero;    
+    }
 
-            default: return null;
-        }
+    protected override void OnDone()
+    {
+        ResetBar();
+        _progressBar.SetActive(false);
+    }
+
+    protected override bool OnStarted()
+    {
+        _progressBar.SetActive(true);
+
+        return true;
+    }
+
+    protected override bool Update()
+    {
+        Parent.StartCoroutine(AddChildInstructuion(new Wait(0.1f, Parent)));
+        var newScaleX = _barTrans.localScale.x + (1 / NodeOptions.Stats.ProduceSpeed / 10);
+        _barTrans.localScale = new Vector3(newScaleX, 1, 1);
+        return !(newScaleX >= 1.0f);
+    }
+
+    protected override void OnTerminated()
+    {
+        ResetBar();
+        _progressBar.SetActive(false);
     }
 }
+
 public sealed class CreateOre : TaskHolder
 {
-    public CreateOre(MonoBehaviour parent) : base(parent) { }
+    private GameObject _orePiece;
+
+    public CreateOre(MonoBehaviour parent) : base(parent)
+    {
+        _orePiece = Addressables.LoadAssetAsync<GameObject>("OrePiece").WaitForCompletion();
+    }
     protected override void OnDone()
     {
         Vector2 pPos = Parent.transform.position;
         base.OnDone();
-        GameObject.Instantiate(LoadAssetBundle.Instance.GetPrefab("OrePiece"),
+        Object.Instantiate(_orePiece,
             new Vector3(pPos.x + Random.Range(-1.0f, 1.0f), pPos.y + Random.Range(-1.0f, 1.0f), 0),
             Quaternion.identity,
             Parent.transform);
-        XPManager.Instance.ReciveOreXP();
+        XPManager.Instance.ReciveOreXp();
     }
 }
+
 public sealed class OreWork : TaskHolder
 {
     private int _oreCount;
     private RaycastHit2D _oreCollider;
-    private LayerMask _oreLayer;
-    private Transform _areaTransform;
+    private readonly LayerMask _oreLayer;
+    private readonly Transform _areaTransform;
+
     public OreWork(MonoBehaviour parent) : base(parent)
     {
         _areaTransform = parent.transform.GetChild(1).transform;
         _oreLayer = LayerMask.GetMask("Ore");
     }
+
     protected override bool OnStarted()
     {
         if (_oreCollider == false)
@@ -66,13 +98,16 @@ public sealed class OreWork : TaskHolder
 
         return base.OnStarted();        
     }
+
     protected override bool Update()
     {
         
         var aPos = _areaTransform.position;
-        var oPos = _oreCollider.transform.position;
+        var position = _oreCollider.transform.position;
+        var oPos = position;
 
-        _oreCollider.transform.position -= (oPos -aPos) / _nodeOptions.Stats.ProduceSpeed / 10;
+        position -= (oPos -aPos) / NodeOptions.Stats.ProduceSpeed / 10;
+        _oreCollider.transform.position = position;
         return base.Update();
     }
     protected override void OnTerminated()
@@ -89,50 +124,6 @@ public sealed class OreWork : TaskHolder
     protected override void OnDone()
     {
         base.OnDone();
-        GameObject.Destroy(_oreCollider.transform.gameObject);
-    }
-}
-public abstract class TaskHolder : Instruction
-{
-    private GameObject _progressBar;
-    private Transform _barTrans;
-    protected NodeOptions _nodeOptions;
-    public TaskHolder(MonoBehaviour parent) : base(parent)
-    {
-        _progressBar = parent.transform.GetChild(0).gameObject;
-        _barTrans = _progressBar.transform.Find("Bar").transform;
-        var p = parent as NodeController;
-        _nodeOptions = p.Options;
-        IsLooped = true;
-    }
-    protected virtual void ResetBar()
-    {
-        _barTrans.localScale = Vector3.zero;
-    }
-    protected override bool OnStarted()
-    {
-        _progressBar.SetActive(true);
-        return true;
-    }
-    protected override bool Update()
-    {
-        Parent.StartCoroutine(AddChildInstructuion(new Wait(0.1f, Parent)));
-        float newScaleX = _barTrans.localScale.x + (1 / _nodeOptions.Stats.ProduceSpeed / 10);
-        _barTrans.localScale = new Vector3(newScaleX, 1, 1);
-        if (newScaleX >= 1.0f)
-        {
-            return false;
-        }
-        return true;
-    }
-    protected override void OnDone()
-    {
-        ResetBar();
-        _progressBar.SetActive(false);
-    }
-    protected override void OnTerminated()
-    {
-        ResetBar();
-        _progressBar.SetActive(false);
+        Object.Destroy(_oreCollider.transform.gameObject);
     }
 }

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+
 [System.Serializable]
 public struct OutputConnection
 {
@@ -24,11 +26,10 @@ public class ConnectionsController : MonoBehaviour
         _circle = transform.GetChild(1).gameObject;
         DataLoader.Instance.OnDataLoaded += SetPool;
     }
-    private void SetPool()
+    private async void SetPool()
     {
-        _linePrefab = LoadAssetBundle.Instance.GetPrefab("Line");
-        if(_linePool == null)
-        _linePool = new ObjectPool<GameObject>(_linePrefab, GameObject.Find("ObjectPool").transform ,0);
+        _linePrefab =  await Addressables.LoadAssetAsync<GameObject>("Line").Task;
+        _linePool = new ObjectPool<GameObject>(_linePrefab, GameObject.Find("ObjectPool").transform, 0);
     }
     public void ChangeInputConnection(ConnectionsController input)
     {

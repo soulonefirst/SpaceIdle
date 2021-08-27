@@ -11,7 +11,7 @@ public class NodeOptions
 {
     public string Id;
     public string Description;
-    public Sprite Icon;
+    public string Icon;
     public Color Color;
     public Stats Stats;
     public List<string> Requirements;

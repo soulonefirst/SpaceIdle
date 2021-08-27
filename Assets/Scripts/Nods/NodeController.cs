@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+
 public class NodeController : MonoBehaviour
 {
 
@@ -30,9 +32,9 @@ public class NodeController : MonoBehaviour
         _connections.SetConnectionArea();
         Task = TaskManager.GetTask(Options.BaseTask, this);
     }
-    private void SetGameObject()
+    private async void SetGameObject()
     {
-        gameObject.name = _nodeId;
-        _spriteRenderer.sprite = Options.Icon;
+        gameObject.name = _nodeId; 
+        _spriteRenderer.sprite = await Addressables.LoadAssetAsync<Sprite>(Options.Icon).Task;
     }
 }

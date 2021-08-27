@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 
 public class TopMenuController : MonoBehaviour, IPointerClickHandler
@@ -17,20 +18,20 @@ public class TopMenuController : MonoBehaviour, IPointerClickHandler
     {
         DataLoader.Instance.OnDataLoaded += LoadOptions;
         _overallXPText = GameObject.Find("OverallXPAmount").GetComponent<Text>();
-        Debug.Log(_overallXPText.gameObject.name);
     }
     private void Update()
     {
         _overallXPText.text = "";
     }
-    private void LoadOptions()
+    private async void LoadOptions()
     {
-         var itemPrefab =   LoadAssetBundle.Instance.GetPrefab("ResourceMenuItem");
+        GameObject itemPrefab = await Addressables.LoadAssetAsync<GameObject>("ResourceMenuItem").Task;
         _objectPool = new ObjectPool<GameObject>(itemPrefab, transform.GetChild(0));
 
         CreateMenuItem(itemPrefab,"Ore XP ");
         CreateMenuItem(itemPrefab, "Crystal XP ");
     }
+    
     private void CreateMenuItem(GameObject prefab, string text)
     {
         var obj = Instantiate(prefab);

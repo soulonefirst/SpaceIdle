@@ -1,9 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using static UnityEngine.Camera;
 
 public class BackgroundController : Singleton<BackgroundController>
 {
+    private enum LayerName
+    {
+        Back,
+        Middle,
+        Front
+    }
     [System.Serializable]
     public struct Layer
     {
@@ -12,29 +19,50 @@ public class BackgroundController : Singleton<BackgroundController>
         [HideInInspector] public float SpriteSizeX;
         [HideInInspector] public float SpriteSizeY;
     }
-    [SerializeField] private Layer[] _layers;
+
+    [SerializeField]private Layer[] _layers;
     private Transform _cameraTransform;
-    private Vector3 _lastCamerPosition;
+    private Vector3 _lastCameraPosition;
+
     private void Start()
     {
-        _cameraTransform = Camera.main.transform;
-        _lastCamerPosition = _cameraTransform.position;
+        if (main is { }) _cameraTransform = main.transform;
+        _lastCameraPosition = _cameraTransform.position;
         for (int i = 0; i < _layers.Length; i++)
         {
-            var sprite = _layers[i].LayerTransform.GetComponent<SpriteRenderer>().sprite;
-            var spriteTexture = sprite.texture;
-            _layers[i].SpriteSizeX = spriteTexture.width / sprite.pixelsPerUnit;
-            _layers[i].SpriteSizeY = spriteTexture.height / sprite.pixelsPerUnit;
+            SetLayerSpriteSize(i, _layers[i].LayerTransform.GetComponent<SpriteRenderer>().sprite);
         }
     }
 
+    private void SetLayerSpriteSize(int layerIndex, Sprite sprite)
+    {
+        var spriteTexture = sprite.texture;
+        _layers[layerIndex].SpriteSizeX = spriteTexture.width / sprite.pixelsPerUnit;
+        _layers[layerIndex].SpriteSizeY = spriteTexture.height / sprite.pixelsPerUnit;
+
+    }
+
+    private async Task SetBackgroundSprite(string spriteName, LayerName layerName, float paralaxMultiplier)
+    {
+        var layerObjTransform = transform.GetChild((int) layerName);
+
+        _layers[(int)layerName].LayerTransform = layerObjTransform;
+
+        _layers[(int)layerName].ParalaxMultiplier = paralaxMultiplier;
+
+        var sprite = await Addressables.LoadAssetAsync<Sprite>(spriteName).Task;
+        layerObjTransform.GetComponent<SpriteRenderer>().sprite = sprite;
+        
+        SetLayerSpriteSize((int)layerName,sprite);
+    }
     public void Move()
     {
-        foreach (Layer layer in _layers)
+        foreach (var layer in _layers)
         {
+            
             var cameraPos = _cameraTransform.position;
             var layerPos = layer.LayerTransform.position;
-            var delta = cameraPos - _lastCamerPosition;
+            var delta = cameraPos - _lastCameraPosition;
             layer.LayerTransform.position = (Vector2)layerPos + (Vector2)delta * layer.ParalaxMultiplier;
 
             if(Mathf.Abs(cameraPos.x - layerPos.x) >= layer.SpriteSizeX)
@@ -48,6 +76,6 @@ public class BackgroundController : Singleton<BackgroundController>
                 layer.LayerTransform.position = new Vector3(cameraPos.x, cameraPos.y + offsetY, layerPos.z);
             }
         }
-            _lastCamerPosition = _cameraTransform.position;
+        _lastCameraPosition = _cameraTransform.position;
     }
 }

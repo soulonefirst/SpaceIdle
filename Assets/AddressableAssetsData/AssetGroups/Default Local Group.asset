@@ -17,66 +17,30 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 1ae8facaf464cd146b9b8b663aaae8b6
   m_SerializeEntries:
-  - m_GUID: 3ec1885b01800f2418a75597e3cc12b1
-    m_Address: Assets/Sprites/BackGround
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: 35313af049b4a2f42a0325330c51d74a
-    m_Address: Assets/Sprites/BackGround/Nebula Red.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: ddcac1fac1f5c8943a30c2ef6b724062
-    m_Address: Assets/Sprites/BackGround/Nebula Blue.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: d9b31ebd60af68c469212c1a9f513e74
-    m_Address: Assets/Sprites/BackGround/Nebula Aqua-Pink.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: c6944f9f15bd0ca4087bcdf033f0e162
-    m_Address: Assets/Sprites/BackGround/Stars-Big_1.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
-  - m_GUID: efe6ce32a6a4408489775c70e5d32f11
-    m_Address: Assets/Sprites/BackGround/Stars Small_1.png
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
   - m_GUID: f4b83a7b76a0c3c40b122e3b88be988a
-    m_Address: Assets/Sprites/BaseShip.png
+    m_Address: BaseShip
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 2800000, guid: f4b83a7b76a0c3c40b122e3b88be988a, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: f4b83a7b76a0c3c40b122e3b88be988a, type: 3}
   - m_GUID: 57fd296d9f4570347927d2afa854bf8d
-    m_Address: Assets/Sprites/Ore.png
+    m_Address: Ore
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 2800000, guid: 57fd296d9f4570347927d2afa854bf8d, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: 57fd296d9f4570347927d2afa854bf8d, type: 3}
   - m_GUID: b918e8d074c53ce44bbbe625ac509c8e
-    m_Address: Assets/Sprites/1x1-ffffffff.png
+    m_Address: WhitePixel
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 2800000, guid: b918e8d074c53ce44bbbe625ac509c8e, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: b918e8d074c53ce44bbbe625ac509c8e, type: 3}
   - m_GUID: 19aee741cc0aecb4995562cf652c1a8c
-    m_Address: Assets/Sprites/Circle.png
+    m_Address: Circle
     m_ReadOnly: 0
     m_SerializedLabels: []
-    m_MainAsset: {fileID: 0}
-    m_TargetAsset: {fileID: 0}
+    m_MainAsset: {fileID: 2800000, guid: 19aee741cc0aecb4995562cf652c1a8c, type: 3}
+    m_TargetAsset: {fileID: 2800000, guid: 19aee741cc0aecb4995562cf652c1a8c, type: 3}
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 0eff1d44cd09f3948a7d6aebc65d3c18, type: 2}
   m_SchemaSet:

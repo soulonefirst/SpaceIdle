@@ -716,7 +716,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
-  m_Size: {x: 100, y: 100}
+  m_Size: {x: 40.96, y: 40.96}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -906,12 +906,12 @@ MonoBehaviour:
     ParalaxMultiplier: 0.9
     SpriteSizeX: 0
     SpriteSizeY: 0
-  - LayerTransform: {fileID: 1986131202}
+  - LayerTransform: {fileID: 0}
     ParalaxMultiplier: 0.5
     SpriteSizeX: 0
     SpriteSizeY: 0
-  - LayerTransform: {fileID: 2040469982}
-    ParalaxMultiplier: 0.01
+  - LayerTransform: {fileID: 0}
+    ParalaxMultiplier: 0.1
     SpriteSizeX: 0
     SpriteSizeY: 0
 --- !u!4 &1626844264
@@ -1204,7 +1204,6 @@ GameObject:
   - component: {fileID: 1896876187}
   - component: {fileID: 1896876186}
   - component: {fileID: 1896876185}
-  - component: {fileID: 1896876188}
   m_Layer: 0
   m_Name: SheetLoader
   m_TagString: Untagged
@@ -1250,13 +1249,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4f312307fb451c4290a76b6b13609cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sheetId: 1E8upFetCuMnfC-_bZgQid-aHWvQZdgcZuNzsAGZ-E0I
-  _pagesId:
+  sheetId: 1E8upFetCuMnfC-_bZgQid-aHWvQZdgcZuNzsAGZ-E0I
+  pagesId:
   - Nodes
   - OreXP
-  _nodeData:
+  nodeData:
     NodeOptionsList: []
-  _oreData: 
+  oreData: 
 --- !u!114 &1896876187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1269,21 +1268,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a9e171afbbdcf942a1b234f254fc088, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1896876188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1896876183}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6fbbf9e454fa99499e2905e73932c0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  assetBundleNames:
-  - sprites
-  - prefabs
 --- !u!1 &1986131201
 GameObject:
   m_ObjectHideFlags: 0

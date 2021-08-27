@@ -3,27 +3,25 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(CVSLoader), typeof(SheetProcessor),typeof(LoadAssetBundle))]
+[RequireComponent(typeof(CVSLoader), typeof(SheetProcessor))]
 public class DataLoader : Singleton<DataLoader>
 {
     public event Action<NodesData> OnNodeDataLoaded;
-    
+
     public event Action OnDataLoaded;
 
-    [FormerlySerializedAs("_sheetId")] [SerializeField] private string sheetId;
-    [SerializeField] private string[] _pagesId; 
-    [SerializeField] private NodesData _nodeData;
-    [SerializeField] private int[] _oreData;
+    [SerializeField] private string sheetId;
+    [SerializeField] private string[] pagesId;
+    [SerializeField] private NodesData nodeData;
+    [SerializeField] private int[] oreData;
 
     private CVSLoader _cvsLoader;
     private SheetProcessor _sheetProcessor;
-    private LoadAssetBundle _loadAssetBundle;
 
     protected override void Awake()
     {
         _cvsLoader = GetComponent<CVSLoader>();
         _sheetProcessor = GetComponent<SheetProcessor>();
-        _loadAssetBundle = GetComponent<LoadAssetBundle>();
         LoadData();
     }
     protected void Start()
@@ -32,23 +30,22 @@ public class DataLoader : Singleton<DataLoader>
     }
     private void LoadData()
     {
-        _loadAssetBundle.LoadAssetsBundles();
-        foreach(string page in _pagesId)
+        foreach(string page in pagesId)
         {
             _cvsLoader.DownloadTable(sheetId, page, OnRawCVSLoaded); 
         }
     }
 
-    private void OnRawCVSLoaded(string rawCVSText, string pageId)
+    private void OnRawCVSLoaded(string rawCvsText, string pageId)
     {
         switch (pageId)
         {
             case "Nodes":
-                _nodeData = _sheetProcessor.ProcessNodeData(rawCVSText);
-                OnNodeDataLoaded?.Invoke(_nodeData);
+                nodeData = _sheetProcessor.ProcessNodeData(rawCvsText);
+                OnNodeDataLoaded?.Invoke(nodeData);
                 break;
             case "OreXP":
-                _sheetProcessor.ProcessOreXP(rawCVSText);
+                _sheetProcessor.ProcessOreXP(rawCvsText);
                 break;
         }
     }
