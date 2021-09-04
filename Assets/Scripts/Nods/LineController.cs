@@ -5,17 +5,17 @@ using UnityEngine;
 public class LineController : MonoBehaviour
 {
     private LineRenderer _lR;
-    private Transform[] _bindedPoints = new Transform[2];
+    private readonly Transform[] _bindPoints = new Transform[2];
 
-    private void Start()
+    private void Awake()
     {
         _lR = GetComponent<LineRenderer>();
-        SetLinePoints();
     }
     public void BindPoints(Transform source,Transform target)
     {
-        _bindedPoints[0]  = source;
-        _bindedPoints[1] = target.transform;
+        _bindPoints[0]  = source;
+        _bindPoints[1] = target.transform;
+        SetLinePoints();
     }
 
     private void FixedUpdate()
@@ -24,7 +24,7 @@ public class LineController : MonoBehaviour
     }
     private void SetLinePoints()
     {
-        Vector3[] bPoints = { _bindedPoints[0].position, _bindedPoints[1].position };
+        Vector3[] bPoints = { _bindPoints[0].position, _bindPoints[1].position };
         _lR.SetPositions(bPoints);
     }
 }

@@ -1,9 +1,10 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(CVSLoader), typeof(SheetProcessor))]
+[RequireComponent(typeof(SheetProcessor), typeof(CVSLoader))]
 public class DataLoader : Singleton<DataLoader>
 {
     public event Action<NodesData> OnNodeDataLoaded;
@@ -17,16 +18,13 @@ public class DataLoader : Singleton<DataLoader>
 
     private CVSLoader _cvsLoader;
     private SheetProcessor _sheetProcessor;
+    private int pageCounter;
 
     protected override void Awake()
     {
         _cvsLoader = GetComponent<CVSLoader>();
         _sheetProcessor = GetComponent<SheetProcessor>();
-        LoadData();
-    }
-    protected void Start()
-    {
-        OnDataLoaded?.Invoke();        
+       LoadData();
     }
     private void LoadData()
     {
@@ -36,6 +34,14 @@ public class DataLoader : Singleton<DataLoader>
         }
     }
 
+    private void Loading()
+    {
+        pageCounter++;
+        if (pageCounter == pagesId.Length)
+        {
+            OnDataLoaded?.Invoke();
+        }
+    }
     private void OnRawCVSLoaded(string rawCvsText, string pageId)
     {
         switch (pageId)
@@ -48,6 +54,7 @@ public class DataLoader : Singleton<DataLoader>
                 _sheetProcessor.ProcessOreXP(rawCvsText);
                 break;
         }
+        Loading();
     }
 
 }

@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class CVSLoader : Singleton<CVSLoader>
+public class CVSLoader : MonoBehaviour
 {
     private bool _debug = true;
     private const string url = "https://docs.google.com/spreadsheets/d/*/gviz/tq?tqx=out:csv&sheet=";

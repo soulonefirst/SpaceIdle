@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 [System.Serializable]
-public struct OutputConnection
+public class OutputConnection
 {
     public ConnectionsController Target;
     public LineController Line;
@@ -31,7 +31,7 @@ public class ConnectionsController : MonoBehaviour
         _linePrefab =  await Addressables.LoadAssetAsync<GameObject>("Line").Task;
         _linePool = new ObjectPool<GameObject>(_linePrefab, GameObject.Find("ObjectPool").transform, 0);
     }
-    public void ChangeInputConnection(ConnectionsController input)
+    private void ChangeInputConnection(ConnectionsController input)
     {
         if (!_inputConnections.Contains(input))
         {
@@ -46,21 +46,21 @@ public class ConnectionsController : MonoBehaviour
     }
     private void OnConnectionsIncrease(ConnectionsController input)
     {
-        _node.Task?.Execute();
-        input._node.Task?.Execute();
+        _node.Task.Execute();
+        input._node.Task.Execute();
     }
     private void OnConnectionsDecreace()
     {
         if (_inputConnections.Count == 0)
         {
-            _node.Task?.Terminate();
+            _node.Task.Stop();
         }
     }
-    public void OnOutputConnectionDecreace()
+    private void OnOutputConnectionDecreace()
     {
         if (_outputConnections.Count == 0)
         {
-            _node.Task?.Terminate();
+            _node.Task.Stop();
         }
     }
     public void SetConnectionArea()
@@ -68,7 +68,7 @@ public class ConnectionsController : MonoBehaviour
         _circle.GetComponent<SpriteRenderer>().color = _node.Options.Color;
         var scale = _node.Options.Stats.ConnectionAreaSize;
         _circle.transform.localScale = new Vector3(scale, scale, 1);
-        InputsController.StartDrag += ShowConnectionArea;
+        InputsController.OnStartDrag += ShowConnectionArea;
     }
     public void ShowConnectionArea(ConnectionsController dragObject)
     {
@@ -79,37 +79,38 @@ public class ConnectionsController : MonoBehaviour
             _circle.SetActive(true);
         }
     }
-    public bool CheckRequirements(ConnectionsController anotherNode) =>
-        _node.Options.Requirements.Contains(anotherNode._node.Options.BaseTask.ToString());
+
+    private bool CheckRequirements(ConnectionsController anotherNode) =>
+        _node.Options.Requirements.Contains(anotherNode._node.Options.BaseTask);
 
     public void AddConnention(ConnectionsController hitObject)
     {
-        if (!CheckContainConnection(hitObject))
-        {
-            var gO = _linePool.Pop();
-            gO.transform.SetParent(transform);
-            var LC = gO.GetComponent<LineController>();
-            LC.BindPoints(transform,hitObject.transform);
+        if (CheckContainConnection(hitObject)) return;
+        
+        var gO = _linePool.Pop();
+        gO.transform.SetParent(transform);
+        var LC = gO.GetComponent<LineController>();
+        LC.BindPoints(transform,hitObject.transform);
 
-            _outputConnections.Add(new OutputConnection { Target = hitObject, Line = LC });
-            hitObject.ChangeInputConnection(this);
-        }
+        _outputConnections.Add(new OutputConnection { Target = hitObject, Line = LC });
+        hitObject.ChangeInputConnection(this);
     }
-    public bool CheckContainConnection(ConnectionsController hitObject) =>
-        _outputConnections.Select(x => x.Target).Contains(hitObject);
-    public void DeleteExcessConnection(List<ConnectionsController> hitObjects)
-    {
-        for (int i = 0; i < _outputConnections.Count; i++)
-        {
-            if (!hitObjects.Contains(_outputConnections[i].Target))
-            {
-                _linePool.Push(_outputConnections[i].Line.gameObject);
 
-                _outputConnections[i].Target.ChangeInputConnection(this);
-                _outputConnections.Remove(_outputConnections[i]);
-                OnOutputConnectionDecreace();
-            }
+    private bool CheckContainConnection(ConnectionsController hitObject) =>
+        _outputConnections.Select(x => x.Target).Contains(hitObject);
+
+    public void DeleteExcessConnection(ConnectionsController excessConnection)
+    {
+        var outputConnection = _outputConnections.FirstOrDefault(x => x.Target == excessConnection);
+        if (outputConnection != null)
+        {
+            _linePool.Push(outputConnection.Line.gameObject);
+
+            outputConnection.Target.ChangeInputConnection(this);
+            _outputConnections.Remove(outputConnection);
         }
+
+        OnOutputConnectionDecreace();
     }
     public void ActivateConnectedLines(bool b)
     {

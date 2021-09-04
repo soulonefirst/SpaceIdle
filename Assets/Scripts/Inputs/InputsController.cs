@@ -16,7 +16,7 @@ public class InputsController : Singleton<InputsController>
     private int _draggableMask;
     private int _connectingMask;
 
-    public static event Action<ConnectionsController> StartDrag;
+    public static event Action<ConnectionsController> OnStartDrag;
     private void Start()
     {
         _cam = Camera.main;
@@ -48,7 +48,7 @@ public class InputsController : Singleton<InputsController>
             _dragObject = hitObject;
             _dragObject.ActivateConnectedLines(true);
             _dragObject.ShowConnectionArea(_dragObject);
-            StartDrag?.Invoke(_dragObject);
+            OnStartDrag?.Invoke(_dragObject);
         }else
             _playerInput.Main.SetCallbacks(CameraMoveController.Instance);
     }
@@ -59,7 +59,7 @@ public class InputsController : Singleton<InputsController>
             _dragObject.ActivateConnectedLines(false);
             _dragObject = null;
             _connectionTargets.Clear();
-            StartDrag?.Invoke(null);
+            OnStartDrag?.Invoke(null);
         }
         else
             _playerInput.Main.SetCallbacks(null);
@@ -82,48 +82,44 @@ public class InputsController : Singleton<InputsController>
     }
     private void MouseMove(CallbackContext callback)
     {
-        if (_dragObject != null)
+        if (_dragObject == null) return;
+        _dragObject.transform.position = MousePosition(callback.ReadValue<Vector2>());
+
+        var hits = GetRaycastHits(_connectingMask);
+        var hitObjects = new List<ConnectionsController>();
+        foreach (RaycastHit2D hit in hits)
         {
-            _dragObject.transform.position = MousePosition(callback.ReadValue<Vector2>());
-
-            var hits = GetRaycastHits(_connectingMask);
-            var hitObjects = new List<ConnectionsController>();
-            foreach (RaycastHit2D hit in hits)
-            {
-                if (hit.transform.parent.TryGetComponent(out ConnectionsController hitConnect))
-                    hitObjects.Add(hit.transform.parent.GetComponent<ConnectionsController>());
-            }
-
-            if (_connectionTargets.Count != hits.Length)
-            {
-                CheckConnections(hitObjects);
-                AddConnections(hitObjects);
-            }
+            if (hit.transform.parent.TryGetComponent(out ConnectionsController hitConnect))
+                hitObjects.Add(hit.transform.parent.GetComponent<ConnectionsController>());
         }
 
-    }
-    private void AddConnections(List<ConnectionsController> hitObjects)
-    {
-        foreach (ConnectionsController hitObject in hitObjects)
-        {
-            if (!_connectionTargets.Contains(hitObject))
-            {
-                _dragObject.AddConnention(hitObject);
-                _connectionTargets.Add(hitObject);
-            }
+        if (_connectionTargets.Count == hits.Length) return;
+        CheckConnections(hitObjects);
+        AddConnections(hitObjects);
 
-        }
     }
+
     private void CheckConnections(List<ConnectionsController> hitObjects)
     {
         for (int i = 0; i < _connectionTargets.Count; i++)
         {
             if (!hitObjects.Contains(_connectionTargets[i]))
             {
+                _dragObject.DeleteExcessConnection(_connectionTargets[i]);
                 _connectionTargets.Remove(_connectionTargets[i]);
             }
         }
-        _dragObject.DeleteExcessConnection(hitObjects);
+    }
+
+    private void AddConnections(List<ConnectionsController> hitObjects)
+    {
+        foreach (ConnectionsController hitObject in hitObjects)
+        {
+            if (_connectionTargets.Contains(hitObject)) continue;
+            
+            _dragObject.AddConnention(hitObject);
+            _connectionTargets.Add(hitObject);
+        }
     }
 }
 

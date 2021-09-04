@@ -14,16 +14,16 @@ public class NodeOptions
     public string Icon;
     public Color Color;
     public Stats Stats;
-    public List<string> Requirements;
+    public List<TaskName> Requirements;
     public TaskName BaseTask;
     public NodeType NodeType;
 
     public override string ToString()
     {
         string requirements = "";
-        foreach (string req in Requirements)
+        foreach (TaskName taskName in Requirements)
         {
-            requirements += req + ", ";
+            requirements += taskName + ", ";
         }
         return $"Id {Id} \n {Description} \nSprite {Icon} \nColor {Color} \n Color \n {requirements} \n {BaseTask}\n {NodeType} ";
     }

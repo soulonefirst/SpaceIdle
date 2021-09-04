@@ -1,0 +1,13 @@
+﻿# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/contentModel.xml
+/projectSettingsUpdater.xml
+/.idea.SpaciIdle.iml
+/modules.xml
+# Datasource local storage ignored files
+/../../../../../../../../:\Users\User\Documents\SpaciIdle\.idea\.idea.SpaciIdle\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/

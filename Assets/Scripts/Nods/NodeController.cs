@@ -14,7 +14,8 @@ public class NodeController : MonoBehaviour
 
     private ConnectionsController _connections;
 
-    public TaskHolder Task;
+    public Instruction Task;
+    
     private void Awake()
     {
         DataLoader.Instance.OnNodeDataLoaded += UpdateOptions;

@@ -70,13 +70,14 @@ public class SheetProcessor : Singleton<SheetProcessor>
             XPManager.Instance.OreXpLevls[i] = ParseInt(cells[0]);
         }
     }
-    private List<string> ParseRequirements(string r) 
+    private List<TaskName> ParseRequirements(string r) 
     {
-        List<string> requirements = new List<string>();
-        string[] req = r.Split(_cellSeporator);
+        List<TaskName> requirements = new List<TaskName>();
+        string[] req = r.Split(_inCellSeporator);
+        if (req[0] == "") return requirements;
         foreach (string requirement in req)
         {
-            requirements.Add(requirement);
+            requirements.Add(_taskName[requirement]);
         }
         return requirements;
     }

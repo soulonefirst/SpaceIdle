@@ -42,7 +42,7 @@ public class BackgroundController : Singleton<BackgroundController>
 
     }
 
-    private async Task SetBackgroundSprite(string spriteName, LayerName layerName, float paralaxMultiplier)
+    private async System.Threading.Tasks.Task SetBackgroundSprite(string spriteName, LayerName layerName, float paralaxMultiplier)
     {
         var layerObjTransform = transform.GetChild((int) layerName);
 

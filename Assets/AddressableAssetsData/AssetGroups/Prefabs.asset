@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Prefabs
+  m_EditorClassIdentifier: 
+  m_GroupName: Prefabs
+  m_Data:
+    m_SerializedData: []
+  m_GUID: af02beecf3c2e284188a7bccb40bb8e2
+  m_SerializeEntries:
+  - m_GUID: 531869794e236fd49b87b95249a7ff2a
+    m_Address: BaseNode
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 7546226113305200561, guid: 531869794e236fd49b87b95249a7ff2a, type: 3}
+    m_TargetAsset: {fileID: 7546226113305200561, guid: 531869794e236fd49b87b95249a7ff2a, type: 3}
+  - m_GUID: c9a3a4fa2d56bc54686fe3b8be3741a1
+    m_Address: ResourceMenuItem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 8673374047909905771, guid: c9a3a4fa2d56bc54686fe3b8be3741a1, type: 3}
+    m_TargetAsset: {fileID: 8673374047909905771, guid: c9a3a4fa2d56bc54686fe3b8be3741a1, type: 3}
+  - m_GUID: 9e85bce2e530c134f93186624d75c7be
+    m_Address: Line
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 246675468100965573, guid: 9e85bce2e530c134f93186624d75c7be, type: 3}
+    m_TargetAsset: {fileID: 246675468100965573, guid: 9e85bce2e530c134f93186624d75c7be, type: 3}
+  - m_GUID: ed8e772fb41fbeb48bb7b2fee05c47ff
+    m_Address: OrePiece
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    m_MainAsset: {fileID: 3122881087591522491, guid: ed8e772fb41fbeb48bb7b2fee05c47ff, type: 3}
+    m_TargetAsset: {fileID: 3122881087591522491, guid: ed8e772fb41fbeb48bb7b2fee05c47ff, type: 3}
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 0eff1d44cd09f3948a7d6aebc65d3c18, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 039d48e3a3052d84c941b22226557a38, type: 2}
+    - {fileID: 11400000, guid: 2f39deb5989e6764bbaeb208aebd5e7a, type: 2}
